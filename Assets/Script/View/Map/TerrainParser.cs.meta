@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: 779dcde9bb1c4694a832fd0f0e917f75
+timeCreated: 1430689660
+licenseType: Pro
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - TerrainMaterial: {fileID: 2100000, guid: 43857e4d7e65b6c469b9565aec01f52a, type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

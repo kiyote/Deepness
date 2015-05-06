@@ -1,0 +1,10 @@
+fileFormatVersion: 2
+guid: 4077233b7d30aac429697147c63106f8
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - MapLayerChunkPrefab: {fileID: 100000, guid: c1cb232b97dd3214fa7a713ea2c945b7,
+      type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
