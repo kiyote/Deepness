@@ -1,0 +1,4 @@
+#ID,name,blocking
+1=dirt,false
+2=rock,true
+3=grass,false

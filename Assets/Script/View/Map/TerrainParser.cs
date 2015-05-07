@@ -5,23 +5,33 @@ using System.Collections.Generic;
 public class TerrainTileDefinition
 {
 	public Rect Floor;
-	public Dictionary<int, Rect> Wall;
+	public Dictionary<int, Rect> Fringe;
 }
 
 public class TerrainParser : MonoBehaviour {
 
-	private Dictionary<string, TerrainTileDefinition> _terrain;
+	private Dictionary<Terrain, TerrainTileDefinition> _terrain;
 	private int _tileSize;
+
+    private Dictionary<string, Terrain> _definitions;
 
 	public Material TerrainMaterial;
 
-	public Dictionary<string, TerrainTileDefinition> Definition
+	public Dictionary<Terrain, TerrainTileDefinition> Definition
 	{
 		get
 		{
-			return _terrain;
+            return _terrain;
 		}
 	}
+
+    public Dictionary<string, Terrain> Terrain
+    {
+        get
+        {
+            return _definitions;
+        }
+    }
 
 	public int TileSize
 	{
@@ -33,11 +43,13 @@ public class TerrainParser : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		_terrain = new Dictionary<string, TerrainTileDefinition>();
+		_terrain = new Dictionary<Terrain, TerrainTileDefinition>();
+        _definitions = new Dictionary<string, Terrain>();
 
 		Texture t = (Texture)Resources.Load(@"Texture/terrain", typeof(Texture2D));
 		TerrainMaterial.mainTexture = t;
 
+        LoadTerrains();
 		LoadTerrainDefinition(t.width, t.height);
 	}
 	
@@ -46,7 +58,29 @@ public class TerrainParser : MonoBehaviour {
 	
 	}
 
-	public void LoadTerrainDefinition(float textureWidth, float textureHeight)
+    private void LoadTerrains()
+    {
+        TextAsset defn = (TextAsset)Resources.Load(@"terrain_definition", typeof(TextAsset));
+        string[] lines = defn.text.Split('\n');
+        foreach (string s in lines)
+        {
+            string line = s.Trim();
+            if (!line.StartsWith("#"))
+            {
+                string[] parts = line.Split('=');
+
+                int id = int.Parse(parts[0]);
+
+                string[] values = parts[1].Split(',');
+                string name = values[0];
+                bool blocking = bool.Parse(values[1]);
+
+                _definitions[name] = new Terrain(id, name, blocking);
+            }
+        }
+    }
+
+	private void LoadTerrainDefinition(float textureWidth, float textureHeight)
 	{
 		TextAsset defn = (TextAsset)Resources.Load(@"Texture/terrain", typeof(TextAsset));
 		string[] lines = defn.text.Split('\n');
@@ -71,14 +105,15 @@ public class TerrainParser : MonoBehaviour {
 				float width = float.Parse(coords[2]);
 				float height = float.Parse(coords[3]);
 
+                Terrain t = _definitions[terrain];
 				TerrainTileDefinition tileDefn;
-				if (_terrain.ContainsKey(terrain) == false)
+				if (_terrain.ContainsKey(t) == false)
 				{
 					tileDefn = new TerrainTileDefinition();
-					tileDefn.Wall = new Dictionary<int, Rect>();
-					_terrain[terrain] = tileDefn;
+					tileDefn.Fringe = new Dictionary<int, Rect>();
+					_terrain[t] = tileDefn;
 				}
-				tileDefn = _terrain[terrain];
+				tileDefn = _terrain[t];
 
 				Rect uv = new Rect(left / textureWidth, (textureHeight - (top + height)) / textureHeight, (left + width) / textureWidth, (textureHeight - top) / textureHeight);
 				if (string.Compare(type, "floor", System.StringComparison.OrdinalIgnoreCase) == 0)
@@ -91,95 +126,9 @@ public class TerrainParser : MonoBehaviour {
 				}
 				else if (string.Compare(type, "fringe", System.StringComparison.OrdinalIgnoreCase) == 0)
 				{
-					tileDefn.Wall[value] = uv;
+					tileDefn.Fringe[value] = uv;
 				}
 			}
 		}
 	}
 }
-
-/*
-			string ts = s.Trim();
-			if (ts.StartsWith("<sprite")) 
-			{
-				string[] parts = ts.Split(' ');
-
-				string terrain = string.Empty;
-				string type = string.Empty;
-				int value = 0;
-				float left = 0.0f;
-				float top = 0.0f;
-				float width = 0.0f;
-				float height = 0.0f;
-
-				foreach (string part in parts)
-				{
-
-					if (part.StartsWith("n"))
-					{
-						string name = part.Substring(part.IndexOf("\"")+1);
-						name = name.Substring(0, name.IndexOf('.'));
-						string[] pieces = name.Split('_');
-						terrain = pieces[0];
-						type = pieces[1];
-						if (pieces.Length == 3)
-						{
-							value = int.Parse(pieces[2]);
-						}
-					} 
-					else if (part.StartsWith("x"))
-					{
-						int start = part.IndexOf("\"")+1;
-						int end = part.LastIndexOf("\"");
-						string coord = part.Substring(start, end - start);
-						left = float.Parse(coord);
-					}
-					else if (part.StartsWith("y"))
-					{
-						int start = part.IndexOf("\"")+1;
-						int end = part.LastIndexOf("\"");
-						string coord = part.Substring(start, end - start);
-						top = float.Parse(coord);
-					}
-					else if (part.StartsWith("w"))
-					{
-						int start = part.IndexOf("\"")+1;
-						int end = part.LastIndexOf("\"");
-						string coord = part.Substring(start, end - start);
-						width = float.Parse(coord);
-					}
-					else if (part.StartsWith("h"))
-					{
-						int start = part.IndexOf("\"")+1;
-						int end = part.LastIndexOf("\"");
-						string coord = part.Substring(start, end - start);
-						height = float.Parse(coord);
-					}
-				}
-				TerrainTileDefinition tileDefn;
-				if (_terrain.ContainsKey(terrain) == false)
-				{
-					tileDefn = new TerrainTileDefinition();
-					tileDefn.Wall = new Dictionary<int, Rect>();
-					_terrain[terrain] = tileDefn;
-				}
-				tileDefn = _terrain[terrain];
-
-				left += 1.0f;
-				
-				Rect uv = new Rect(left / textureWidth, (textureHeight - (top + height)) / textureHeight, (left + width) / textureWidth, (textureHeight - top) / textureHeight);
-				if (string.Compare(type, "floor", System.StringComparison.OrdinalIgnoreCase) == 0)
-				{
-					if (_tileSize == 0) {
-						_tileSize = (int)width;
-					}
-					
-					tileDefn.Floor = uv;
-				}
-				else if (string.Compare(type, "wall", System.StringComparison.OrdinalIgnoreCase) == 0)
-				{
-					tileDefn.Wall[value] = uv;
-				}
-
-			}
- */

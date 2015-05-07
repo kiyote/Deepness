@@ -1,7 +1,7 @@
 ﻿using System;
 
 [Flags]
-public enum Wall: byte
+public enum TileCompass: byte
 {
 	None = 0,
 	

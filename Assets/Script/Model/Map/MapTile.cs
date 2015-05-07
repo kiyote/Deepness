@@ -13,8 +13,8 @@ public class MapTile
 	private int _column;
 	private int _row;
 	private bool _isWall;
-	private Wall _walls;
-	//private Terrain _terrain;
+	private TileCompass _fringe;
+	private Terrain _terrain;
 
 	
 	public MapTile(Map map, int column, int row)
@@ -23,18 +23,20 @@ public class MapTile
 		_column = column;
 		_row = row;
 		_isWall = false;
-		_walls = Wall.None;
+		_fringe = TileCompass.None;
 	}
 
-	/*
 	public Terrain Terrain 
 	{
 		get 
 		{
 			return _terrain;
 		}
+        set
+        {
+            _terrain = value;
+        }
 	}
-	*/
 	
 	public int Column
 	{
@@ -68,15 +70,15 @@ public class MapTile
 		}
 	}
 	
-	public Wall Walls
+	public TileCompass Fringe
 	{
 		get
 		{
-			return _walls;
+			return _fringe;
 		}
 		set
 		{
-			_walls = value;
+			_fringe = value;
 		}
 	}
 

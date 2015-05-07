@@ -147,53 +147,53 @@ public class Map
 				MapTile down = GetTile(col, row - 1);
 				MapTile downRight = GetTile(col + 1, row - 1);
 
-				Wall oldWalls = tile.Walls;
+				TileCompass oldWalls = tile.Fringe;
 
-				tile.Walls = Wall.None;
+				tile.Fringe = TileCompass.None;
 				
 				if ((up != null) && (up.IsWall && tile.IsWall)) {
-					tile.Walls |= Wall.Top;
+					tile.Fringe |= TileCompass.Top;
 				}
 				if ((right != null) && (right.IsWall && tile.IsWall)) {
-					tile.Walls |= Wall.Right;
+					tile.Fringe |= TileCompass.Right;
 				}
 				if ((down != null) && (down.IsWall && tile.IsWall)) {
-					tile.Walls |= Wall.Bottom;
+					tile.Fringe |= TileCompass.Bottom;
 				}
 				if ((left != null) && (left.IsWall && tile.IsWall)) {
-					tile.Walls |= Wall.Left;
+					tile.Fringe |= TileCompass.Left;
 				}
 				
 				if ((upLeft != null) && (upLeft.IsWall && tile.IsWall))
 				{
 					if ((up != null) && (left != null) && (up.IsWall) && (left.IsWall)) 
 					{
-						tile.Walls |= Wall.TopLeft;
+						tile.Fringe |= TileCompass.TopLeft;
 					}
 				}
 				if ((upRight != null) && (upRight.IsWall && tile.IsWall))
 				{
 					if ((up != null) && (right != null) && (up.IsWall) && (right.IsWall))
 					{
-						tile.Walls |= Wall.TopRight;
+						tile.Fringe |= TileCompass.TopRight;
 					}
 				}
 				if ((downLeft != null) && (downLeft.IsWall && tile.IsWall))
 				{
 					if ((down != null) && (left != null) && (down.IsWall) && (left.IsWall))
 					{
-						tile.Walls |= Wall.BottomLeft;
+						tile.Fringe |= TileCompass.BottomLeft;
 					}
 				}
 				if ((downRight != null) && (downRight.IsWall && tile.IsWall))
 				{
 					if ((down != null) && (right != null) && (down.IsWall) && (right.IsWall))
 					{
-						tile.Walls |= Wall.BottomRight;
+						tile.Fringe |= TileCompass.BottomRight;
 					}
 				}
 
-				if (oldWalls != tile.Walls)
+				if (oldWalls != tile.Fringe)
 				{
 					SignalMapChanged(tile);
 				}

@@ -76,14 +76,14 @@ public class MapLayerChunkBehaviour : MonoBehaviour, IPointerClickHandler {
 					
 					if (mapTile != null)
 					{
-						Rect uvc = tp.Definition["stone"].Floor;
+						Rect uvc = tp.Definition[tp.Terrain["dirt"]].Floor;
 						GenerateTile(c, r, ref uvc);
 						
 						if (mapTile.IsWall)
 						{
-							if (tp.Definition["grass"].Wall.ContainsKey((int)mapTile.Walls)) 
+							if (tp.Definition[tp.Terrain["grass"]].Fringe.ContainsKey((int)mapTile.Fringe)) 
 							{
-								uvc = tp.Definition["grass"].Wall[(int)mapTile.Walls];
+								uvc = tp.Definition[tp.Terrain["grass"]].Fringe[(int)mapTile.Fringe];
 								GenerateTile(c, r, ref uvc);
 							}
 						}
