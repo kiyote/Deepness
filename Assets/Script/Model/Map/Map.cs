@@ -15,13 +15,13 @@ public class Map
 	public event MapBatchChangedEventHandler MapBatchChanged;
 	private bool _inBatch;
 	private List<MapTile> _dirtyTiles;
-	private bool _initializing;
+    private bool _creating;
 
 	public Map()
 	{
 		_inBatch = false;
 		_dirtyTiles = new List<MapTile>();
-		_initializing = false;
+        _creating = false;
 	}
 	
 	public void Create(int tileWidth, int tileHeight)
@@ -37,22 +37,20 @@ public class Map
 				_tiles[x, y] = new MapTile(this, x, y);
 			}
 		}
-
-		// Random walls
-		_initializing = true;
-		System.Random r = new System.Random(); 
-		int count = (int)((float)(_width * _height) * 0.5f);
-		for (int i = 0; i < count * 2; i++)
-		{
-			//_map.Tile[r.Next(_map.Width), r.Next(_map.Height)].Terrain.Floor = _terrain["grass"];
-			_tiles[r.Next(_width), r.Next(_height)].IsWall = true;
-		}
-
-		CompileWalls();
-		_initializing = false;
 	}
 
 	#region Map Updating Event Logic
+    public void BeginCreate()
+    {
+        _creating = true;
+    }
+
+    public void EndCreate()
+    {
+        CompileWalls();
+        _creating = false;
+    }
+
 	public void BeginUpdate()
 	{
 		_dirtyTiles.Clear();
@@ -61,10 +59,10 @@ public class Map
 
 	public void SignalMapChanged(MapTile mapTile)
 	{
-		if (_initializing)
-		{
-			return;
-		}
+        if (_creating)
+        {
+            return;
+        }
 
 		if (_inBatch)
 		{

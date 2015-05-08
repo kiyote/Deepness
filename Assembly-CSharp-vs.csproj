@@ -54,6 +54,7 @@
      <Compile Include="Assets\Script\Model\Map\Corner.cs" />
      <Compile Include="Assets\Script\Model\Map\Edge.cs" />
      <Compile Include="Assets\Script\Model\Map\Map.cs" />
+     <Compile Include="Assets\Script\Model\Map\MapGenerator.cs" />
      <Compile Include="Assets\Script\Model\Map\MapTile.cs" />
      <Compile Include="Assets\Script\Model\Map\Terrain.cs" />
      <Compile Include="Assets\Script\Model\Map\TileCompass.cs" />

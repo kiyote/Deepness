@@ -17,7 +17,9 @@ public class Controller : MonoBehaviour {
 
     private void CreateGame(object sender, CreateGameEventArgs e)
     {
-        Game.Instance.Map.Create(e.MapWidth, e.MapHeight);
+        MapGenerator mg = new MapGenerator(null);
+        mg.Generate(Game.Instance.Map, 500, 500);
+
         SceneEvents.Instance.CreateMap(Game.Instance.Map);
         UIEvents.Instance.HideNewGameMenu();
     }
