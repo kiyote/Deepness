@@ -16,6 +16,7 @@ public class MapBehaviour : MonoBehaviour {
 			Row = row;
 			GameObject = gameObject;
 			Used = true;
+            Behaviour = gameObject.GetComponent<MapLayerChunkBehaviour>();
 		}
 
 		public int Column;
@@ -23,6 +24,7 @@ public class MapBehaviour : MonoBehaviour {
 		public GameObject GameObject;
 		public bool Used;
 		public bool Dirty;
+        public MapLayerChunkBehaviour Behaviour;
 	}
 
 	public GameObject MapLayerChunkPrefab;
@@ -34,7 +36,7 @@ public class MapBehaviour : MonoBehaviour {
 
 	// These are local caches of other objects
 	private Map _map;
-	private TerrainParser _tp;
+	private TerrainTextureDefinition _ttd;
 	private int _rOffset;
 	private int _cOffset;
 	private GameObject _mapObject;
@@ -43,8 +45,9 @@ public class MapBehaviour : MonoBehaviour {
 	void Start()
 	{
         SceneEvents.CreatingMap += CreateMap;
+        SystemEvents.TerrainParsed += TerrainParsed;
+        SystemEvents.CameraUpdated += CameraUpdated;
 
-		Camera.main.GetComponent<CameraBehaviour>().CameraUpdated += CameraUpdated;
 		_blockCache = GameObject.Find(BlockCacheObjectName);
 
 		_cachedBlocks = new List<GameObject>();
@@ -59,35 +62,44 @@ public class MapBehaviour : MonoBehaviour {
 			if (block.Dirty)
 			{
 				block.Dirty = false;
-				MapLayerChunkBehaviour mapLayerChunkBehaviour = block.GameObject.GetComponent<MapLayerChunkBehaviour>();
-				mapLayerChunkBehaviour.Populate(_map, block.Column, block.Row, _tp);
+				block.Behaviour.Populate(_map, block.Column, block.Row, _ttd);
 			}
 		}
 	}
 
-	private void ChunkClicked(Vector3 worldPosition)
-	{
-		float x = (worldPosition.x + (_map.Width / 2.0f));
-		float y = (worldPosition.y + (_map.Height / 2.0f));
-		int column = Mathf.RoundToInt(x);
-		int row = Mathf.RoundToInt(y);
-
-		_map.BeginUpdate();
-		_map.Tile[column, row].IsWall = false;
-		_map.EndUpdate();
-	}
+    #region Event Handlers
+    private void TerrainParsed(object sender, TerrainParsedEventArgs e)
+    {
+        _ttd = e.TerrainTextureDefinition;
+    }
 	
-	public MapTile GetMapTile(Vector3 position)
-	{
-		return null;
-	}
-
-    public void CreateMap(object sender, CreateMapEventArgs e)
+    private void CreateMap(object sender, CreateMapEventArgs e)
     {
         Populate(e.Map);
     }
 
-	private void Populate(Map map)
+    private void ChunkClicked(Vector3 worldPosition)
+    {
+        float x = (worldPosition.x + (_map.Width / 2.0f));
+        float y = (worldPosition.y + (_map.Height / 2.0f));
+        int column = Mathf.RoundToInt(x);
+        int row = Mathf.RoundToInt(y);
+
+        _map.BeginUpdate();
+        _map.Tile[column, row].IsWall = false;
+        _map.EndUpdate();
+    }
+
+    private void CameraUpdated(object sender, CameraUpdateEventArgs e)
+    {
+        if (_map != null)
+        {
+            CalculateBlocksOnDisplay(e.Bounds);
+        }
+    }
+    #endregion
+
+    private void Populate(Map map)
 	{
 		if (_map != null)
 		{
@@ -114,12 +126,10 @@ public class MapBehaviour : MonoBehaviour {
 			_mapObject = mapObject;
 			if (mapObject != null)
 			{
-				_tp = mapObject.GetComponent<TerrainParser>();
 				_terrainObject = GameObject.Find(TerrainLayerObjectName);
 			}
 			else
 			{
-				_tp = null;
 				_terrainObject = null;
 			}
 		}
@@ -130,8 +140,7 @@ public class MapBehaviour : MonoBehaviour {
 	private void MapChanged(Map map, int column, int row, MapTile mapTile)
 	{
 		IndexedBlock ib = GetMapBlock(column, row);
-		MapLayerChunkBehaviour mapChunk = ib.GameObject.GetComponent<MapLayerChunkBehaviour>();
-		mapChunk.Populate(map, ib.Column, ib.Row, _tp);
+		ib.Behaviour.Populate(map, ib.Column, ib.Row, _ttd);
 	}
 
 	private void MapBatchChanged(Map map, List<MapTile> dirtyTiles)
@@ -151,17 +160,8 @@ public class MapBehaviour : MonoBehaviour {
 			IndexedBlock ib = _onDisplay[i];
 			if (ib.Dirty)
 			{
-				MapLayerChunkBehaviour mapChunk = ib.GameObject.GetComponent<MapLayerChunkBehaviour>();
-				mapChunk.Populate(map, ib.Column, ib.Row, _tp);
+				ib.Behaviour.Populate(map, ib.Column, ib.Row, _ttd);
 			}
-		}
-	}
-
-	private void CameraUpdated(Camera sender, CameraUpdateEventArgs e)
-	{
-		if (_map != null)
-		{
-			CalculateBlocksOnDisplay(e.Bounds);
 		}
 	}
 
@@ -230,7 +230,7 @@ public class MapBehaviour : MonoBehaviour {
 				// we need to make a new block (or recycle a cached block) and put it on display
 				if ((!found) && (r >= 0) && (r < _map.Height) && (c >= 0) && (c < _map.Width))
 				{
-					GameObject go = CreateChunk(_terrainObject, _map, c, r, _cOffset, _rOffset, _tp);
+					GameObject go = CreateChunk(_terrainObject, _map, c, r, _cOffset, _rOffset, _ttd);
 					_onDisplay.Add(new IndexedBlock(c, r, go));
 				}
 			}
@@ -258,13 +258,13 @@ public class MapBehaviour : MonoBehaviour {
 		}
 	}
 
-	private GameObject CreateChunk(GameObject terrainObject, Map map, int column, int row, int columnOffset, int rowOffset, TerrainParser tp)
+	private GameObject CreateChunk(GameObject terrainObject, Map map, int column, int row, int columnOffset, int rowOffset, TerrainTextureDefinition ttd)
 	{
 		GameObject mapLayerChunkObject = GetNewMapBlock();
 		mapLayerChunkObject.transform.parent = terrainObject.transform;
 		mapLayerChunkObject.transform.localPosition = new Vector3(column - columnOffset, row - rowOffset);
 		MapLayerChunkBehaviour mapLayerChunkBehaviour = mapLayerChunkObject.GetComponent<MapLayerChunkBehaviour>();
-		mapLayerChunkBehaviour.Populate(map, column, row, tp);
+		mapLayerChunkBehaviour.Populate(map, column, row, ttd);
 
 		return mapLayerChunkObject;
 	}

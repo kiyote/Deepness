@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\Script\Camera\CameraBehaviour.cs" />
+     <Compile Include="Assets\Script\Camera\CameraExtensions.cs" />
      <Compile Include="Assets\Script\Controller.cs" />
      <Compile Include="Assets\Script\Controls\Panel_MainMenu.cs" />
      <Compile Include="Assets\Script\Controls\Panel_NewGame.cs" />
@@ -57,12 +58,15 @@
      <Compile Include="Assets\Script\Model\Map\MapGenerator.cs" />
      <Compile Include="Assets\Script\Model\Map\MapTile.cs" />
      <Compile Include="Assets\Script\Model\Map\Terrain.cs" />
+     <Compile Include="Assets\Script\Model\Map\TerrainDefinition.cs" />
      <Compile Include="Assets\Script\Model\Map\TileCompass.cs" />
      <Compile Include="Assets\Script\SceneEvents.cs" />
+     <Compile Include="Assets\Script\SystemEvents.cs" />
      <Compile Include="Assets\Script\UIEvents.cs" />
      <Compile Include="Assets\Script\View\Map\MapBehaviour.cs" />
      <Compile Include="Assets\Script\View\Map\MapLayerChunkBehaviour.cs" />
      <Compile Include="Assets\Script\View\Map\TerrainParser.cs" />
+     <Compile Include="Assets\Script\View\Map\TerrainTextureDefinition.cs" />
      <None Include="Assets\Shaders\UnlitTransparentColor.shader" />
      <None Include="Assets\Resources\Texture\terrain.txt" />
      <None Include="Assets\Resources\terrain_definition.txt" />

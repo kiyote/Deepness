@@ -1,4 +1,4 @@
 #ID,name,blocking
-1=dirt,false
-2=rock,true
+1=stone,true
+2=dirt,false
 3=grass,false

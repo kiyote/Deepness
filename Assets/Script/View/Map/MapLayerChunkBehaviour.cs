@@ -12,15 +12,15 @@ public class MapLayerChunkBehaviour : MonoBehaviour, IPointerClickHandler {
 	
 	public const int BlockSize = 10;
 
+    public event MapLayerChunkClickHandler Clicked;
+
+    // Local caching to prevent creating these over and over
 	private List<Vector3> _vertices;
 	private List<int> _triangles;
 	private List<Vector3> _normals;
 	private List<Vector2> _uv;
 	private List<Color32> _colors;
-
 	private Vector3 _normal;
-
-	public event MapLayerChunkClickHandler Clicked;
 
 	public MapLayerChunkBehaviour(): base()
 	{
@@ -32,9 +32,9 @@ public class MapLayerChunkBehaviour : MonoBehaviour, IPointerClickHandler {
 		_normal = new Vector3(0, 0, -1);
 	}
 
-	public void Populate(Map map, int startColumn, int startRow, TerrainParser tp)
+	public void Populate(Map map, int startColumn, int startRow, TerrainTextureDefinition ttd)
 	{
-		GenerateMesh(map, startColumn, startRow, tp);
+		GenerateMesh(map, startColumn, startRow, ttd, Game.Instance.Terrain);
 	}
 
 	public void OnPointerClick(PointerEventData eventData)
@@ -52,10 +52,10 @@ public class MapLayerChunkBehaviour : MonoBehaviour, IPointerClickHandler {
 		}
 	}
 
-	private void GenerateMesh(Map map, int startColumn, int startRow, TerrainParser tp)
+	private void GenerateMesh(Map map, int startColumn, int startRow, TerrainTextureDefinition ttd, TerrainDefinition td)
 	{
 		MeshRenderer mr = GetComponent<MeshRenderer>();
-		mr.sharedMaterial = tp.TerrainMaterial;
+		mr.sharedMaterial = ttd.Material;
 
 		_vertices.Clear();
 		_triangles.Clear();
@@ -76,14 +76,14 @@ public class MapLayerChunkBehaviour : MonoBehaviour, IPointerClickHandler {
 					
 					if (mapTile != null)
 					{
-						Rect uvc = tp.Definition[tp.Terrain["dirt"]].Floor;
+						Rect uvc = ttd.ByTerrain(td.ByName("dirt")).Floor;
 						GenerateTile(c, r, ref uvc);
 						
 						if (mapTile.IsWall)
 						{
-							if (tp.Definition[tp.Terrain["grass"]].Fringe.ContainsKey((int)mapTile.Fringe)) 
+							if (ttd.ByTerrain(td.ByName("grass")).Fringe.ContainsKey((int)mapTile.Fringe)) 
 							{
-								uvc = tp.Definition[tp.Terrain["grass"]].Fringe[(int)mapTile.Fringe];
+								uvc = ttd.ByTerrain(td.ByName("grass")).Fringe[(int)mapTile.Fringe];
 								GenerateTile(c, r, ref uvc);
 							}
 						}

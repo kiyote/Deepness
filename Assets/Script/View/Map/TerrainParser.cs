@@ -1,62 +1,35 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System;
 using System.Collections.Generic;
 
-public class TerrainTileDefinition
-{
-	public Rect Floor;
-	public Dictionary<int, Rect> Fringe;
-}
 
 public class TerrainParser : MonoBehaviour {
 
-	private Dictionary<Terrain, TerrainTileDefinition> _terrain;
+    private TerrainTextureDefinition _definition;
 	private int _tileSize;
-
-    private Dictionary<string, Terrain> _definitions;
 
 	public Material TerrainMaterial;
 
-	public Dictionary<Terrain, TerrainTileDefinition> Definition
-	{
-		get
-		{
-            return _terrain;
-		}
-	}
-
-    public Dictionary<string, Terrain> Terrain
-    {
-        get
-        {
-            return _definitions;
-        }
-    }
-
-	public int TileSize
-	{
-		get
-		{
-			return _tileSize;
-		}
-	}
-
 	// Use this for initialization
 	void Start () {
-		_terrain = new Dictionary<Terrain, TerrainTileDefinition>();
-        _definitions = new Dictionary<string, Terrain>();
-
-		Texture t = (Texture)Resources.Load(@"Texture/terrain", typeof(Texture2D));
-		TerrainMaterial.mainTexture = t;
-
-        LoadTerrains();
-		LoadTerrainDefinition(t.width, t.height);
+        SystemEvents.InitializingSystems += InitializingSystems;
 	}
 	
 	// Update is called once per frame
 	void Update () {
 	
 	}
+
+    private void InitializingSystems(object sender, EventArgs e)
+    {
+        _definition = new TerrainTextureDefinition(TerrainMaterial);
+
+        Texture t = (Texture)Resources.Load(@"Texture/terrain", typeof(Texture2D));
+        TerrainMaterial.mainTexture = t;
+
+        LoadTerrains();
+        LoadTerrainDefinition(t.width, t.height);
+    }
 
     private void LoadTerrains()
     {
@@ -75,7 +48,7 @@ public class TerrainParser : MonoBehaviour {
                 string name = values[0];
                 bool blocking = bool.Parse(values[1]);
 
-                _definitions[name] = new Terrain(id, name, blocking);
+                Game.Instance.Terrain.Add(new Terrain(id, name, blocking));
             }
         }
     }
@@ -105,15 +78,12 @@ public class TerrainParser : MonoBehaviour {
 				float width = float.Parse(coords[2]);
 				float height = float.Parse(coords[3]);
 
-                Terrain t = _definitions[terrain];
-				TerrainTileDefinition tileDefn;
-				if (_terrain.ContainsKey(t) == false)
+                Terrain t = Game.Instance.Terrain.ByName(terrain);
+                TerrainTileDefinition tileDefn = _definition.ByTerrain(t);
+				if (tileDefn == null)
 				{
-					tileDefn = new TerrainTileDefinition();
-					tileDefn.Fringe = new Dictionary<int, Rect>();
-					_terrain[t] = tileDefn;
+                    tileDefn = _definition.Create(t);
 				}
-				tileDefn = _terrain[t];
 
 				Rect uv = new Rect(left / textureWidth, (textureHeight - (top + height)) / textureHeight, (left + width) / textureWidth, (textureHeight - top) / textureHeight);
 				if (string.Compare(type, "floor", System.StringComparison.OrdinalIgnoreCase) == 0)
@@ -130,5 +100,7 @@ public class TerrainParser : MonoBehaviour {
 				}
 			}
 		}
+
+        SystemEvents.Instance.TerrainParse(_definition);
 	}
 }

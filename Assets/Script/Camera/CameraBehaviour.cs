@@ -2,26 +2,6 @@
 using System;
 using System.Collections;
 
-public class CameraUpdateEventArgs : EventArgs
-{
-	private readonly Rect _bounds;
-
-	public CameraUpdateEventArgs(Rect bounds) : base()
-	{
-		_bounds = bounds;
-	}
-
-	public Rect Bounds
-	{
-		get
-		{
-			return _bounds;
-		}
-	}
-}
-
-public delegate void CameraUpdateEventHandler(Camera sender, CameraUpdateEventArgs e);
-
 public class CameraBehaviour : MonoBehaviour {
 	
 	private const float Duration = 0.15f;  // The amount of time it takes to animate to the new zoom level
@@ -34,8 +14,6 @@ public class CameraBehaviour : MonoBehaviour {
 
 	public const float PixelsToUnits = (float)MapBehaviour.TileSize;
 
-	public event CameraUpdateEventHandler CameraUpdated;
-	
 	void Start () {
 		_oneToOne = Screen.height / PixelsToUnits / 2.0f;
 		_maxZoomIn = _oneToOne * 2.0f;
@@ -91,10 +69,7 @@ public class CameraBehaviour : MonoBehaviour {
 		if (dirty)
 		{
 			GetComponent<Camera>().UpdateOrthographicBounds();
-			if (CameraUpdated != null)
-			{
-				CameraUpdated(GetComponent<Camera>(), new CameraUpdateEventArgs(GetComponent<Camera>().OrthographicBounds()));
-			}
+            SystemEvents.Instance.UpdateCamera(GetComponent<Camera>().OrthographicBounds());
 		}
 	}
 	
@@ -106,26 +81,4 @@ public class CameraBehaviour : MonoBehaviour {
 
 		return adjustedUnityUnits;
 	}
-}
-
-public static class CameraExtensions
-{
-	private static Rect _bounds;
-	
-	public static UnityEngine.Rect OrthographicBounds(this Camera camera)
-	{
-		
-		return _bounds;
-	}
-	
-	public static void UpdateOrthographicBounds(this Camera camera)
-	{
-		float height = 2.0f * camera.orthographicSize;
-		float width = height * camera.aspect;
-		float x = camera.transform.position.x;
-		float y = camera.transform.position.y;
-		
-		_bounds = new UnityEngine.Rect(x - (width / 2.0f), y - (height / 2.0f), width, height);
-	}
-	
 }

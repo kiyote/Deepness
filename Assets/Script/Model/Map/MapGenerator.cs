@@ -5,11 +5,8 @@ using System.Text;
 
 public class MapGenerator
 {
-    List<Terrain> _terrain;
-
-    public MapGenerator(List<Terrain> terrain)
+    public MapGenerator()
     {
-        _terrain = terrain;
     }
 
     public void Generate(Map map, int width, int height)

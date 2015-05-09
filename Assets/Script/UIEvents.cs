@@ -26,7 +26,6 @@ public class UIEvents: MonoBehaviour
 
     void Start()
     {
-        ShowMainMenu();
     }
 
     public void ShowMainMenu()

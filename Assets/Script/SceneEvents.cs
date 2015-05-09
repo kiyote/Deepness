@@ -24,15 +24,12 @@ public class CreateMapEventArgs: EventArgs
     public Map Map;
 }
 
-public delegate void CreateGameEventHandler(object sender, CreateGameEventArgs e);
-public delegate void CreateMapEventHandler(object sender, CreateMapEventArgs e);
-
 public class SceneEvents : MonoBehaviour
 {
     public static event EventHandler StartingNewGame;
     public static event EventHandler Terminating;
-    public static event CreateGameEventHandler CreatingGame;
-    public static event CreateMapEventHandler CreatingMap;
+    public static event EventHandler<CreateGameEventArgs> CreatingGame;
+    public static event EventHandler<CreateMapEventArgs> CreatingMap;
 
     private static SceneEvents _instance;
 

@@ -28,4 +28,9 @@ public class Panel_MainMenu : MonoBehaviour {
     {
         _animator.SetTrigger("FadeOut");
     }
+
+    public void StartNewGame()
+    {
+        SceneEvents.Instance.StartNewGame();
+    }
 }
