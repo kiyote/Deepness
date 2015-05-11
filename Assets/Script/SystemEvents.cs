@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System;
 using System.Collections.Generic;
+using Model.Map;
+using View.Map;
 
 public class TerrainParsedEventArgs: EventArgs
 {

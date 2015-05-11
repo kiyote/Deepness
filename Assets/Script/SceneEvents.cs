@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Model.Map;
 
 public class CreateGameEventArgs: EventArgs
 {

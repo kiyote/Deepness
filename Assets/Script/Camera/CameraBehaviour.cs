@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System;
 using System.Collections;
+using View.Map;
 
 public class CameraBehaviour : MonoBehaviour {
 	
@@ -12,7 +13,7 @@ public class CameraBehaviour : MonoBehaviour {
 	private float _maxZoomOut;
 	private float _targetSize;
 
-	public const float PixelsToUnits = (float)MapBehaviour.TileSize;
+	public const float PixelsToUnits = (float)MapView.TileSize;
 
 	void Start () {
 		_oneToOne = Screen.height / PixelsToUnits / 2.0f;

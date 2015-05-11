@@ -1,16 +1,17 @@
 using System;
 using System.Collections.Generic;
+using Model.Map;
 
 public class Game
 {
 	private static Game _instance = new Game();
 
-	private Map _map;
+    private Map _map;
     private TerrainDefinition _terrain;
 
 	public Game ()
 	{
-		_map = new Map();
+        _map = new Map();
         _terrain = new TerrainDefinition();
 	}
 
@@ -22,7 +23,7 @@ public class Game
         }
 	}
 
-	public Map Map
+    public Map Map
 	{
 		get
 		{

@@ -1,42 +1,47 @@
-﻿using System;
-using System.Collections.Generic;
-
-public class TerrainDefinition
+﻿
+namespace Model.Map
 {
-    private IDictionary<int, Terrain> _terrainById;
-    private IDictionary<string, Terrain> _terrainByName;
+    using System;
+    using System.Collections.Generic;
 
-    public TerrainDefinition()
+    public class TerrainDefinition
     {
-        _terrainById = new Dictionary<int, Terrain>();
-        _terrainByName = new Dictionary<string, Terrain>();
-    }
+        private IDictionary<int, MapTerrain> _terrainById;
+        private IDictionary<string, MapTerrain> _terrainByName;
 
-    public void Add(Terrain terrain)
-    {
-        _terrainById[terrain.Id] = terrain;
-        _terrainByName[terrain.Name] = terrain;
-    }
-
-    public Terrain ByName(string name)
-    {
-        if (_terrainByName.ContainsKey(name) == false)
+        public TerrainDefinition()
         {
-            throw new InvalidOperationException(String.Format("Unable to locate terrain '{0}'.", name));
+            _terrainById = new Dictionary<int, MapTerrain>();
+            _terrainByName = new Dictionary<string, MapTerrain>();
         }
-        return _terrainByName[name];
-    }
 
-    public Terrain ById(int id)
-    {
-        return _terrainById[id];
-    }
-
-    public ICollection<Terrain> Terrain
-    {
-        get
+        public void Add(MapTerrain terrain)
         {
-            return _terrainById.Values;
+            _terrainById[terrain.Id] = terrain;
+            _terrainByName[terrain.Name] = terrain;
+        }
+
+        public MapTerrain ByName(string name)
+        {
+            if (_terrainByName.ContainsKey(name) == false)
+            {
+                throw new InvalidOperationException(String.Format("Unable to locate terrain '{0}'.", name));
+            }
+            return _terrainByName[name];
+        }
+
+        public MapTerrain ById(int id)
+        {
+            return _terrainById[id];
+        }
+
+        public ICollection<MapTerrain> Terrain
+        {
+            get
+            {
+                return _terrainById.Values;
+            }
         }
     }
 }
+

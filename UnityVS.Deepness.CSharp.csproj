@@ -56,9 +56,6 @@
     <Reference Include="UnityEngine.UI">
       <HintPath>Library\UnityAssemblies\UnityEngine.UI.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEngine.UI">
-      <HintPath>Library\UnityAssemblies\UnityEngine.UI.dll</HintPath>
-    </Reference>
     <Reference Include="UnityEditor.iOS.Extensions.Xcode">
       <HintPath>Library\UnityAssemblies\UnityEditor.iOS.Extensions.Xcode.dll</HintPath>
     </Reference>
@@ -75,14 +72,14 @@
     <Compile Include="Assets\Script\Model\Map\Map.cs" />
     <Compile Include="Assets\Script\Model\Map\MapGenerator.cs" />
     <Compile Include="Assets\Script\Model\Map\MapTile.cs" />
-    <Compile Include="Assets\Script\Model\Map\Terrain.cs" />
+    <Compile Include="Assets\Script\Model\Map\MapTerrain.cs" />
     <Compile Include="Assets\Script\Model\Map\TerrainDefinition.cs" />
     <Compile Include="Assets\Script\Model\Map\TileCompass.cs" />
     <Compile Include="Assets\Script\SceneEvents.cs" />
     <Compile Include="Assets\Script\SystemEvents.cs" />
     <Compile Include="Assets\Script\UIEvents.cs" />
-    <Compile Include="Assets\Script\View\Map\MapBehaviour.cs" />
-    <Compile Include="Assets\Script\View\Map\MapLayerChunkBehaviour.cs" />
+    <Compile Include="Assets\Script\View\Map\MapView.cs" />
+    <Compile Include="Assets\Script\View\Map\MapChunk.cs" />
     <Compile Include="Assets\Script\View\Map\TerrainParser.cs" />
     <Compile Include="Assets\Script\View\Map\TerrainTextureDefinition.cs" />
   </ItemGroup>

@@ -1,71 +1,76 @@
-﻿using UnityEngine;
-using System;
-using System.Collections.Generic;
-
-public class TerrainTileDefinition
+﻿namespace View.Map
 {
-    private Rect _floor;
-    private Dictionary<int, Rect> _fringe;
+    using UnityEngine;
+    using System;
+    using System.Collections.Generic;
+    using Model.Map;
 
-    public TerrainTileDefinition()
+    public class TerrainTileDefinition
     {
-        _fringe = new Dictionary<int, Rect>();
-    }
+        private Rect _floor;
+        private Dictionary<int, Rect> _fringe;
 
-    public Rect Floor
-    {
-        get
+        public TerrainTileDefinition()
         {
-            return _floor;
+            _fringe = new Dictionary<int, Rect>();
         }
-        set
+
+        public Rect Floor
         {
-            _floor = value;
+            get
+            {
+                return _floor;
+            }
+            set
+            {
+                _floor = value;
+            }
         }
-    }
 
-    public Dictionary<int, Rect> Fringe
-    {
-        get
+        public Dictionary<int, Rect> Fringe
         {
-            return _fringe;
-        }
-    }
-}
-
-public class TerrainTextureDefinition
-{
-    private Dictionary<Terrain, TerrainTileDefinition> _definitionByTerrain;
-    private Material _material;
-
-    public TerrainTextureDefinition(Material material)
-    {
-        _material = material;
-        _definitionByTerrain = new Dictionary<Terrain, TerrainTileDefinition>();
-    }
-
-    public Material Material
-    {
-        get
-        {
-            return _material;
+            get
+            {
+                return _fringe;
+            }
         }
     }
 
-    public TerrainTileDefinition Create(Terrain terrain)
+    public class TerrainTextureDefinition
     {
-        TerrainTileDefinition definition = new TerrainTileDefinition();
-        _definitionByTerrain[terrain] = definition;
+        private Dictionary<MapTerrain, TerrainTileDefinition> _definitionByTerrain;
+        private Material _material;
 
-        return definition;
-    }
-
-    public TerrainTileDefinition ByTerrain(Terrain terrain)
-    {
-        if (_definitionByTerrain.ContainsKey(terrain))
+        public TerrainTextureDefinition(Material material)
         {
-            return _definitionByTerrain[terrain];
+            _material = material;
+            _definitionByTerrain = new Dictionary<MapTerrain, TerrainTileDefinition>();
         }
-        return null;
+
+        public Material Material
+        {
+            get
+            {
+                return _material;
+            }
+        }
+
+        public TerrainTileDefinition Create(MapTerrain terrain)
+        {
+            TerrainTileDefinition definition = new TerrainTileDefinition();
+            _definitionByTerrain[terrain] = definition;
+
+            return definition;
+        }
+
+        public TerrainTileDefinition ByTerrain(MapTerrain terrain)
+        {
+            if (_definitionByTerrain.ContainsKey(terrain))
+            {
+                return _definitionByTerrain[terrain];
+            }
+            return null;
+        }
     }
+
 }
