@@ -148,60 +148,50 @@ namespace Model.Map
                     MapTile down = GetTile(col, row - 1);
                     MapTile downRight = GetTile(col + 1, row - 1);
 
-                    TileCompass oldWalls = tile.Fringe;
-
-                    tile.Fringe = TileCompass.None;
-
-                    if ((up != null) && (up.IsWall && tile.IsWall))
+                    if ((up != null) && (up.Terrain.Id > tile.Terrain.Id))
                     {
-                        tile.Fringe |= TileCompass.Top;
-                    }
-                    if ((right != null) && (right.IsWall && tile.IsWall))
-                    {
-                        tile.Fringe |= TileCompass.Right;
-                    }
-                    if ((down != null) && (down.IsWall && tile.IsWall))
-                    {
-                        tile.Fringe |= TileCompass.Bottom;
-                    }
-                    if ((left != null) && (left.IsWall && tile.IsWall))
-                    {
-                        tile.Fringe |= TileCompass.Left;
+                        tile.AddFringe(up.Terrain, TileCompass.Top);
                     }
 
-                    if ((upLeft != null) && (upLeft.IsWall && tile.IsWall))
+                    if ((right != null) && (right.Terrain.Id > tile.Terrain.Id))
                     {
-                        if ((up != null) && (left != null) && (up.IsWall) && (left.IsWall))
-                        {
-                            tile.Fringe |= TileCompass.TopLeft;
-                        }
-                    }
-                    if ((upRight != null) && (upRight.IsWall && tile.IsWall))
-                    {
-                        if ((up != null) && (right != null) && (up.IsWall) && (right.IsWall))
-                        {
-                            tile.Fringe |= TileCompass.TopRight;
-                        }
-                    }
-                    if ((downLeft != null) && (downLeft.IsWall && tile.IsWall))
-                    {
-                        if ((down != null) && (left != null) && (down.IsWall) && (left.IsWall))
-                        {
-                            tile.Fringe |= TileCompass.BottomLeft;
-                        }
-                    }
-                    if ((downRight != null) && (downRight.IsWall && tile.IsWall))
-                    {
-                        if ((down != null) && (right != null) && (down.IsWall) && (right.IsWall))
-                        {
-                            tile.Fringe |= TileCompass.BottomRight;
-                        }
+                        tile.AddFringe(right.Terrain, TileCompass.Right);
                     }
 
-                    if (oldWalls != tile.Fringe)
+                    if ((down != null) && (down.Terrain.Id > tile.Terrain.Id))
                     {
+                        tile.AddFringe(down.Terrain, TileCompass.Bottom);
+                    }
+
+                    if ((left != null) && (left.Terrain.Id > tile.Terrain.Id))
+                    {
+                        tile.AddFringe(left.Terrain, TileCompass.Left);
+                    }
+
+                    if ((upLeft != null) && (upLeft.Terrain.Id > tile.Terrain.Id))
+                    {
+                        tile.AddFringe(upLeft.Terrain, TileCompass.TopLeft);
+                    }
+
+                    if ((upRight != null) && (upRight.Terrain.Id > tile.Terrain.Id))
+                    {
+                        tile.AddFringe(upRight.Terrain, TileCompass.TopRight);
+                    }
+
+                    if ((downLeft != null) && (downLeft.Terrain.Id > tile.Terrain.Id))
+                    {
+                        tile.AddFringe(downLeft.Terrain, TileCompass.BottomLeft);
+                    }
+
+                    if ((downRight != null) && (downRight.Terrain.Id > tile.Terrain.Id))
+                    {
+                        tile.AddFringe(downRight.Terrain, TileCompass.BottomRight);
+                    }
+
+                    //if (oldWalls != tileFringe)
+                    //{
                         SignalMapChanged(tile);
-                    }
+                    //}
 
                     /*
                     if ((upLeft != null) && (upLeft.Terrain.Id > tile.Terrain.Id))

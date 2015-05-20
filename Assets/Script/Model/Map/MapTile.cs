@@ -11,13 +11,24 @@ namespace Model.Map
 
     public class MapTile
     {
+        private class TileFringe
+        {
+            public TileFringe(MapTerrain terrain)
+            {
+                Fringe = TileCompass.None;
+                Terrain = terrain;
+            }
+
+            public TileCompass Fringe;
+            public MapTerrain Terrain;
+        }
+
         private Map _map;
         private int _column;
         private int _row;
         private bool _isWall;
-        private TileCompass _fringe;
         private MapTerrain _terrain;
-
+        private Dictionary<MapTerrain, TileFringe> _fringe;
 
         public MapTile(Map map, int column, int row)
         {
@@ -25,7 +36,7 @@ namespace Model.Map
             _column = column;
             _row = row;
             _isWall = false;
-            _fringe = TileCompass.None;
+            _fringe = new Dictionary<MapTerrain, TileFringe>();
         }
 
         public MapTerrain Terrain
@@ -72,18 +83,49 @@ namespace Model.Map
             }
         }
 
-        public TileCompass Fringe
+        public void SetFringe(MapTerrain terrain, TileCompass fringe)
         {
-            get
+            TileFringe tileFringe;
+            if (_fringe.ContainsKey(terrain))
             {
-                return _fringe;
+                tileFringe = _fringe[terrain];
             }
-            set
+            else
             {
-                _fringe = value;
+                tileFringe = new TileFringe(terrain);
+                _fringe[terrain] = tileFringe;
             }
+
+            tileFringe.Fringe = fringe;
         }
 
+        public void AddFringe(MapTerrain terrain, TileCompass fringe)
+        {
+            TileFringe tileFringe;
+            if (_fringe.ContainsKey(terrain))
+            {
+                tileFringe = _fringe[terrain];
+            }
+            else
+            {
+                tileFringe = new TileFringe(terrain);
+                _fringe[terrain] = tileFringe;
+            }
+
+            tileFringe.Fringe |= fringe;
+        }
+
+        public TileCompass GetFringe(MapTerrain terrain)
+        {
+            if (_fringe.ContainsKey(terrain))
+            {
+                return _fringe[terrain].Fringe;
+            }
+            else
+            {
+                return TileCompass.None;
+            }
+        }
     }
 
 }

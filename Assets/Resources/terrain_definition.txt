@@ -2,4 +2,4 @@
 1=stone,true
 2=dirt,false
 3=grass,false
-99=water,false
+#99=water,false

@@ -15,12 +15,23 @@ namespace Model.Map
             map.Create(width, height);
             map.BeginCreate();
 
-            System.Random r = new System.Random();
+            System.Random rand = new System.Random();
+
+            List<MapTerrain> terrains = new List<MapTerrain>(Game.Instance.Terrain.Terrain);
+            for (int r = 0; r < map.Height; r++)
+            {
+                for (int c = 0; c < map.Width; c++)
+                {
+                    map.Tile[c, r].Terrain = terrains[0];
+                }
+            }
+
             int count = (int)((float)(width * height) * 0.5f);
             for (int i = 0; i < count; i++)
             {
                 //_map.Tile[r.Next(_map.Width), r.Next(_map.Height)].Terrain.Floor = _terrain["grass"];
-                map.Tile[r.Next(width), r.Next(height)].IsWall = true;
+                //map.Tile[r.Next(width), r.Next(height)].IsWall = true;
+                map.Tile[rand.Next(width), rand.Next(height)].Terrain = terrains[rand.Next(terrains.Count)];
             }
 
             map.EndCreate();

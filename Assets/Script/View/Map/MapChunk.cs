@@ -51,10 +51,6 @@ namespace View.Map
                     Clicked(eventData.worldPosition);
                 }
             }
-            else if (eventData.pointerId == PointerInputModule.kMouseRightId)
-            {
-                Debug.Log(eventData);
-            }
         }
 
         private void GenerateMesh(Map map, int startColumn, int startRow, TerrainTextureDefinition ttd, TerrainDefinition td)
@@ -67,6 +63,10 @@ namespace View.Map
             _normals.Clear();
             _uv.Clear();
             _colors.Clear();
+
+            int generateCount = 0;
+
+            ICollection<MapTerrain> terrains = Game.Instance.Terrain.Terrain;
 
             for (int r = 0; r < BlockSize; r++)
             {
@@ -81,21 +81,40 @@ namespace View.Map
 
                         if (mapTile != null)
                         {
-                            Rect uvc = ttd.ByTerrain(td.ByName("dirt")).Floor;
+                            Rect uvc = ttd.ByTerrain(mapTile.Terrain).Floor;
                             GenerateTile(c, r, ref uvc);
 
-                            if (mapTile.IsWall)
+                            generateCount++;
+
+                            foreach (MapTerrain terrain in terrains)
                             {
-                                if (ttd.ByTerrain(td.ByName("grass")).Fringe.ContainsKey((int)mapTile.Fringe))
+                                TileCompass fringe = mapTile.GetFringe(terrain);
+                                if (fringe != TileCompass.None)
                                 {
-                                    uvc = ttd.ByTerrain(td.ByName("grass")).Fringe[(int)mapTile.Fringe];
-                                    GenerateTile(c, r, ref uvc);
+                                    TerrainTileDefinition target = ttd.ByTerrain(terrain);
+                                    if (target == null)
+                                    {
+                                        Debug.Log("WTF?");
+                                    }
+                                    if (target.Fringe.ContainsKey((int)fringe))
+                                    {
+                                        uvc = target.Fringe[(int)fringe];
+                                        GenerateTile(c, r, ref uvc);
+
+                                        generateCount++;
+                                    }
+                                    else
+                                    {
+                                        Debug.Log("Unable to locate fringe: " + fringe);
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
+
+            Debug.Log("Generate count: " + generateCount);
 
             Mesh mesh = new Mesh();
             mesh.vertices = _vertices.ToArray();
