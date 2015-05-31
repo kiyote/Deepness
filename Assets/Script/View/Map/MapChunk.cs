@@ -3,7 +3,9 @@ namespace View.Map
 {
     using UnityEngine;
     using UnityEngine.EventSystems;
+    using System;
     using System.Collections.Generic;
+    using System.Threading;
     using Model.Map;
 
     public delegate void MapLayerChunkClickHandler(Vector3 worldPosition);
@@ -13,33 +15,63 @@ namespace View.Map
     [RequireComponent(typeof(MeshFilter))]
     public class MapChunk : MonoBehaviour, IPointerClickHandler
     {
-
         public const int BlockSize = 10;
 
         public event MapLayerChunkClickHandler Clicked;
 
-        // Local caching to prevent creating these over and over
-        private List<Vector3> _vertices;
-        private List<int> _triangles;
-        private List<Vector3> _normals;
-        private List<Vector2> _uv;
-        private List<Color32> _colors;
-        private Vector3 _normal;
+        private MeshRenderer _meshRenderer;
+        private MeshFilter _meshFilter;
+        private ThreadedGenerator _job;
 
-        public MapChunk()
-            : base()
+        private class ThreadedGenerator: ThreadedJob
         {
-            _vertices = new List<Vector3>();
-            _triangles = new List<int>();
-            _normals = new List<Vector3>();
-            _uv = new List<Vector2>();
-            _colors = new List<Color32>();
-            _normal = new Vector3(0, 0, -1);
+            private Map _map;
+            private int _startColumn;
+            private int _startRow;
+            private TerrainTextureDefinition _ttd;
+            private TerrainDefinition _td;
+            private MapChunkGenerator _generator;
+
+            public ThreadedGenerator(Map map, int startColumn, int startRow, TerrainTextureDefinition ttd, TerrainDefinition td)
+            {
+                _map = map;
+                _startColumn = startColumn;
+                _startRow = startRow;
+                _ttd = ttd;
+                _td = td;
+                _generator = new MapChunkGenerator();
+            }
+
+            protected override void ThreadFunction()
+            {
+                _generator.Generate(_map, _startColumn, _startRow, _td.Terrain, _ttd);
+            }
+
+            public void PopulateMesh(MeshRenderer mr, MeshFilter mf)
+            {
+                _generator.PopulateMesh(mr, mf);
+            }
         }
 
         public void Populate(Map map, int startColumn, int startRow, TerrainTextureDefinition ttd)
         {
-            GenerateMesh(map, startColumn, startRow, ttd, Game.Instance.Terrain);
+            if (_meshRenderer == null)
+            {
+                _meshRenderer = GetComponent<MeshRenderer>();
+                _meshFilter = GetComponent<MeshFilter>();
+            }
+
+            _job = new ThreadedGenerator(map, startColumn, startRow, ttd, Game.Instance.Terrain);
+            _job.Start();
+        }
+        
+        void Update()
+        {
+            if ((_job != null) && (_job.IsDone))
+            {
+                _job.PopulateMesh(_meshRenderer, _meshFilter);
+                _job = null;
+            }
         }
 
         public void OnPointerClick(PointerEventData eventData)
@@ -51,112 +83,6 @@ namespace View.Map
                     Clicked(eventData.worldPosition);
                 }
             }
-        }
-
-        private void GenerateMesh(Map map, int startColumn, int startRow, TerrainTextureDefinition ttd, TerrainDefinition td)
-        {
-            MeshRenderer mr = GetComponent<MeshRenderer>();
-            mr.sharedMaterial = ttd.Material;
-
-            _vertices.Clear();
-            _triangles.Clear();
-            _normals.Clear();
-            _uv.Clear();
-            _colors.Clear();
-
-            int generateCount = 0;
-
-            ICollection<MapTerrain> terrains = Game.Instance.Terrain.Terrain;
-
-            for (int r = 0; r < BlockSize; r++)
-            {
-                for (int c = 0; c < BlockSize; c++)
-                {
-                    int x = c + startColumn;
-                    int y = r + startRow;
-
-                    if ((x >= 0) && (x < map.Width) && (y >= 0) && (y < map.Height))
-                    {
-                        MapTile mapTile = map.Tile[x, y];
-
-                        if (mapTile != null)
-                        {
-                            Rect uvc = ttd.ByTerrain(mapTile.Terrain).Floor;
-                            GenerateTile(c, r, ref uvc);
-
-                            generateCount++;
-
-                            foreach (MapTerrain terrain in terrains)
-                            {
-                                TileCompass fringe = mapTile.GetFringe(terrain);
-                                if (fringe != TileCompass.None)
-                                {
-                                    TerrainTileDefinition target = ttd.ByTerrain(terrain);
-                                    if (target == null)
-                                    {
-                                        Debug.Log("WTF?");
-                                    }
-                                    if (target.Fringe.ContainsKey((int)fringe))
-                                    {
-                                        uvc = target.Fringe[(int)fringe];
-                                        GenerateTile(c, r, ref uvc);
-
-                                        generateCount++;
-                                    }
-                                    else
-                                    {
-                                        Debug.Log("Unable to locate fringe: " + fringe);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            Debug.Log("Generate count: " + generateCount);
-
-            Mesh mesh = new Mesh();
-            mesh.vertices = _vertices.ToArray();
-            mesh.colors32 = _colors.ToArray();
-            mesh.triangles = _triangles.ToArray();
-            mesh.normals = _normals.ToArray();
-            mesh.uv = _uv.ToArray();
-
-            MeshFilter meshFilter = GetComponent<MeshFilter>();
-            Destroy(meshFilter.sharedMesh);
-            meshFilter.mesh = mesh;
-        }
-
-        private void GenerateTile(int c, int r, ref Rect uvc)
-        {
-            int vertexIndex = _vertices.Count;
-            _vertices.Add(new Vector3(c + -0.5f, r + -0.5f, 0));
-            _vertices.Add(new Vector3(c + 0.5f, r + -0.5f, 0));
-            _vertices.Add(new Vector3(c + 0.5f, r + 0.5f, 0));
-            _vertices.Add(new Vector3(c + -0.5f, r + 0.5f, 0));
-
-            _triangles.Add(vertexIndex + 3);
-            _triangles.Add(vertexIndex + 2);
-            _triangles.Add(vertexIndex + 1);
-            _triangles.Add(vertexIndex + 1);
-            _triangles.Add(vertexIndex + 0);
-            _triangles.Add(vertexIndex + 3);
-
-            _normals.Add(_normal);
-            _normals.Add(_normal);
-            _normals.Add(_normal);
-            _normals.Add(_normal);
-
-            _uv.Add(new Vector2(uvc.x, uvc.y));
-            _uv.Add(new Vector2(uvc.width, uvc.y));
-            _uv.Add(new Vector2(uvc.width, uvc.height));
-            _uv.Add(new Vector2(uvc.x, uvc.height));
-
-            _colors.Add(Color.white);
-            _colors.Add(Color.white);
-            _colors.Add(Color.white);
-            _colors.Add(Color.white);
         }
     }
 }

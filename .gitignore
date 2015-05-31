@@ -20,3 +20,5 @@ Files
 *.GhostDoc.xml
 *.pdb
 StyleCop.Cache
+*.exe
+*.apk

@@ -62,50 +62,30 @@ namespace View.Map
         private void LoadTerrainDefinition(float textureWidth, float textureHeight)
         {
             TextAsset defn = (TextAsset)Resources.Load(@"Texture/terrain", typeof(TextAsset));
-            string[] lines = defn.text.Split('\n');
-            float halfXPixel = 0.5f / textureWidth;
-            float halfYPixel = 0.5f / textureHeight;
-            foreach (string s in lines)
+            SpriteSheetParser parser = new SpriteSheetParser();
+            IEnumerable<SpriteSheetParser.Entry> entries = parser.Parse(defn, textureWidth, textureHeight);
+
+            foreach (SpriteSheetParser.Entry entry in entries)
             {
-                string[] parts = s.Split('=');
-                if ((parts.Length > 0) && (parts[0] != string.Empty))
+                MapTerrain t = Game.Instance.Terrain.ByName(entry.Terrain);
+                TerrainTileDefinition tileDefn = _definition.ByTerrain(t);
+                if (tileDefn == null)
                 {
-                    string[] lookups = parts[0].Trim().Split('_');
-                    string terrain = lookups[0];
-                    string type = lookups[1];
-                    int value = -1;
-                    if (lookups.Length == 3)
+                    tileDefn = _definition.Create(t);
+                }
+
+                if (string.Compare(entry.Type, "floor", System.StringComparison.OrdinalIgnoreCase) == 0)
+                {
+                    if (_tileSize == 0)
                     {
-                        value = int.Parse(lookups[2]);
+                        _tileSize = 24;
                     }
 
-                    string[] coords = parts[1].Trim().Split(' ');
-                    float left = float.Parse(coords[0]) + halfXPixel;
-                    float top = float.Parse(coords[1]) + halfYPixel;
-                    float width = float.Parse(coords[2]);
-                    float height = float.Parse(coords[3]);
-
-                    MapTerrain t = Game.Instance.Terrain.ByName(terrain);
-                    TerrainTileDefinition tileDefn = _definition.ByTerrain(t);
-                    if (tileDefn == null)
-                    {
-                        tileDefn = _definition.Create(t);
-                    }
-
-                    Rect uv = new Rect(left / textureWidth, (textureHeight - (top + height)) / textureHeight, (left + width) / textureWidth, (textureHeight - top) / textureHeight);
-                    if (string.Compare(type, "floor", System.StringComparison.OrdinalIgnoreCase) == 0)
-                    {
-                        if (_tileSize == 0)
-                        {
-                            _tileSize = (int)width;
-                        }
-
-                        tileDefn.Floor = uv;
-                    }
-                    else if (string.Compare(type, "fringe", System.StringComparison.OrdinalIgnoreCase) == 0)
-                    {
-                        tileDefn.Fringe[value] = uv;
-                    }
+                    tileDefn.Floor = entry.Coordinates;
+                }
+                else if (string.Compare(entry.Type, "edge", System.StringComparison.OrdinalIgnoreCase) == 0)
+                {
+                    tileDefn.Fringe[entry.Value] = entry.Coordinates;
                 }
             }
 

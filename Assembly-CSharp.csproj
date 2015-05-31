@@ -61,9 +61,12 @@
      <Compile Include="Assets\Script\Model\Map\TerrainDefinition.cs" />
      <Compile Include="Assets\Script\Model\Map\TileCompass.cs" />
      <Compile Include="Assets\Script\SceneEvents.cs" />
+     <Compile Include="Assets\Script\SpriteSheetParser.cs" />
      <Compile Include="Assets\Script\SystemEvents.cs" />
+     <Compile Include="Assets\Script\ThreadedJob.cs" />
      <Compile Include="Assets\Script\UIEvents.cs" />
      <Compile Include="Assets\Script\View\Map\MapChunk.cs" />
+     <Compile Include="Assets\Script\View\Map\MapChunkGenerator.cs" />
      <Compile Include="Assets\Script\View\Map\MapView.cs" />
      <Compile Include="Assets\Script\View\Map\TerrainParser.cs" />
      <Compile Include="Assets\Script\View\Map\TerrainTextureDefinition.cs" />

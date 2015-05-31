@@ -168,6 +168,7 @@ namespace Model.Map
                         tile.AddFringe(left.Terrain, TileCompass.Left);
                     }
 
+                    /*
                     if ((upLeft != null) && (upLeft.Terrain.Id > tile.Terrain.Id))
                     {
                         tile.AddFringe(upLeft.Terrain, TileCompass.TopLeft);
@@ -187,6 +188,7 @@ namespace Model.Map
                     {
                         tile.AddFringe(downRight.Terrain, TileCompass.BottomRight);
                     }
+                     */
 
                     //if (oldWalls != tileFringe)
                     //{
