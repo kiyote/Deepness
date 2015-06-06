@@ -50,7 +50,7 @@ namespace Model.Map
 
         public void EndCreate()
         {
-            CompileWalls();
+            CompileMap();
             _creating = false;
         }
 
@@ -78,14 +78,14 @@ namespace Model.Map
 
             if ((mapTile != null) && (MapChanged != null))
             {
-                CompileWalls();
+                CompileMap();
                 MapChanged(this, mapTile.Column, mapTile.Row, mapTile);
             }
         }
 
         public void EndUpdate()
         {
-            CompileWalls();
+            CompileMap();
             _inBatch = false;
             if ((_dirtyTiles.Count > 0) && (MapBatchChanged != null))
             {
@@ -131,7 +131,7 @@ namespace Model.Map
             }
         }
 
-        public void CompileWalls()
+        public void CompileMap()
         {
             for (int row = 0; row < _height; row++)
             {
@@ -139,14 +139,10 @@ namespace Model.Map
                 {
                     MapTile tile = _tiles[col, row];
 
-                    MapTile upLeft = GetTile(col - 1, row + 1);
                     MapTile up = GetTile(col, row + 1);
-                    MapTile upRight = GetTile(col + 1, row + 1);
                     MapTile left = GetTile(col - 1, row);
                     MapTile right = GetTile(col + 1, row);
-                    MapTile downLeft = GetTile(col - 1, row - 1);
                     MapTile down = GetTile(col, row - 1);
-                    MapTile downRight = GetTile(col + 1, row - 1);
 
                     if ((up != null) && (up.Terrain.Id > tile.Terrain.Id))
                     {
@@ -168,67 +164,72 @@ namespace Model.Map
                         tile.AddFringe(left.Terrain, TileCompass.Left);
                     }
 
-                    /*
-                    if ((upLeft != null) && (upLeft.Terrain.Id > tile.Terrain.Id))
+                    if (tile.IsWall)
                     {
-                        tile.AddFringe(upLeft.Terrain, TileCompass.TopLeft);
+                        MapTile upLeft = GetTile(col - 1, row + 1);
+                        MapTile upRight = GetTile(col + 1, row + 1);
+                        MapTile downLeft = GetTile(col - 1, row - 1);
+                        MapTile downRight = GetTile(col + 1, row - 1);
+
+                        if ((up != null) && (up.IsWall && tile.IsWall) && (up.Terrain.Id == tile.Terrain.Id))
+                        {
+                            tile.AddWall(tile.Terrain, TileCompass.Top);
+                        }
+
+                        if ((right != null) && (right.IsWall && tile.IsWall) && (right.Terrain.Id == tile.Terrain.Id))
+                        {
+                            tile.AddWall(tile.Terrain, TileCompass.Right);
+                        }
+
+                        if ((down != null) && (down.IsWall && tile.IsWall) && (down.Terrain.Id == tile.Terrain.Id))
+                        {
+                            tile.AddWall(tile.Terrain, TileCompass.Bottom);
+                        }
+
+                        if ((left != null) && (left.IsWall && tile.IsWall) && (left.Terrain.Id == tile.Terrain.Id))
+                        {
+                            tile.AddWall(tile.Terrain, TileCompass.Left);
+                        }
+
+                        if ((upLeft != null) && (upLeft.IsWall && tile.IsWall) && (upLeft.Terrain.Id == tile.Terrain.Id))
+                        {
+                            if ((up != null) && (left != null) && (up.IsWall) && (left.IsWall) && (left.Terrain.Id == tile.Terrain.Id) && (up.Terrain.Id == tile.Terrain.Id))
+                            {
+                                tile.AddWall(tile.Terrain, TileCompass.TopLeft);
+                            }
+                        }
+
+                        if ((upRight != null) && (upRight.IsWall && tile.IsWall) && (upRight.Terrain.Id == tile.Terrain.Id))
+                        {
+                            if ((up != null) && (right != null) && (up.IsWall) && (right.IsWall) && (right.Terrain.Id == tile.Terrain.Id) && (up.Terrain.Id == tile.Terrain.Id))
+                            {
+                                tile.AddWall(tile.Terrain, TileCompass.TopRight);
+                            }
+                        }
+
+                        if ((downLeft != null) && (downLeft.IsWall && tile.IsWall) && (downLeft.Terrain.Id == tile.Terrain.Id))
+                        {
+                            if ((down != null) && (left != null) && (down.IsWall) && (left.IsWall) && (down.Terrain.Id == tile.Terrain.Id) && (left.Terrain.Id == tile.Terrain.Id))
+                            {
+                                tile.AddWall(tile.Terrain, TileCompass.BottomLeft);
+                            }
+                        }
+
+                        if ((downRight != null) && (downRight.IsWall && tile.IsWall) && (downRight.Terrain.Id == tile.Terrain.Id))
+                        {
+                            if ((down != null) && (right != null) && (down.IsWall) && (right.IsWall) && (down.Terrain.Id == tile.Terrain.Id) && (right.Terrain.Id == tile.Terrain.Id))
+                            {
+                                tile.AddWall(tile.Terrain, TileCompass.BottomRight);
+                            }
+                        }
+
                     }
 
-                    if ((upRight != null) && (upRight.Terrain.Id > tile.Terrain.Id))
-                    {
-                        tile.AddFringe(upRight.Terrain, TileCompass.TopRight);
-                    }
-
-                    if ((downLeft != null) && (downLeft.Terrain.Id > tile.Terrain.Id))
-                    {
-                        tile.AddFringe(downLeft.Terrain, TileCompass.BottomLeft);
-                    }
-
-                    if ((downRight != null) && (downRight.Terrain.Id > tile.Terrain.Id))
-                    {
-                        tile.AddFringe(downRight.Terrain, TileCompass.BottomRight);
-                    }
-                     */
 
                     //if (oldWalls != tileFringe)
                     //{
                         SignalMapChanged(tile);
                     //}
-
-                    /*
-                    if ((upLeft != null) && (upLeft.Terrain.Id > tile.Terrain.Id))
-                    {
-                        GetFringe(tile, upLeft.Terrain).Corner |= Corner.TopLeft;
-                    }
-                    if ((up != null) && (up.Terrain.Id > tile.Terrain.Id))
-                    {
-                        GetFringe(tile, up.Terrain).Edge |= Edge.Top;
-                    }
-                    if ((upRight != null) && (upRight.Terrain.Id > tile.Terrain.Id))
-                    {
-                        GetFringe(tile, upRight.Terrain).Corner |= Corner.TopRight;
-                    }
-                    if ((left != null) && (left.Terrain.Id > tile.Terrain.Id))
-                    {
-                        GetFringe(tile, left.Terrain).Edge |= Edge.Left;
-                    }
-                    if ((right != null) && (right.Terrain.Id > tile.Terrain.Id))
-                    {
-                        GetFringe(tile, right.Terrain).Edge |= Edge.Right;
-                    }
-                    if ((downLeft != null) && (downLeft.Terrain.Id > tile.Terrain.Id))
-                    {
-                        GetFringe(tile, downLeft.Terrain).Corner |= Corner.BottomLeft;
-                    }
-                    if ((down != null) && (down.Terrain.Id > tile.Terrain.Id))
-                    {
-                        GetFringe(tile, down.Terrain).Edge |= Edge.Bottom;
-                    }
-                    if ((downRight != null) && (downRight.Terrain.Id > tile.Terrain.Id))
-                    {
-                        GetFringe(tile, downRight.Terrain).Corner |= Corner.BottomRight;
-                    }
-                    */
                 }
             }
 

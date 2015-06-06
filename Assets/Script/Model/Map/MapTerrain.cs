@@ -5,13 +5,13 @@ namespace Model.Map
     {
         private readonly int _id;
         private readonly string _name;
-        private readonly bool _blocking;
+        private readonly bool _walls;
 
-        public MapTerrain(int id, string name, bool blocking)
+        public MapTerrain(int id, string name, bool walls)
         {
             _id = id;
             _name = name;
-            _blocking = blocking;
+            _walls = walls;
         }
 
         public int Id
@@ -30,11 +30,11 @@ namespace Model.Map
             }
         }
 
-        public bool Blocking
+        public bool Walls
         {
             get
             {
-                return _blocking;
+                return _walls;
             }
         }
     }

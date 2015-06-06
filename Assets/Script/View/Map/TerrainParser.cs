@@ -87,6 +87,10 @@ namespace View.Map
                 {
                     tileDefn.Fringe[entry.Value] = entry.Coordinates;
                 }
+                else if (string.Compare(entry.Type, "wall", System.StringComparison.OrdinalIgnoreCase) == 0)
+                {
+                    tileDefn.Walls[entry.Value] = entry.Coordinates;
+                }
             }
 
             SystemEvents.Instance.TerrainParse(_definition);

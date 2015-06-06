@@ -9,10 +9,12 @@
     {
         private Rect _floor;
         private Dictionary<int, Rect> _fringe;
+        private Dictionary<int, Rect> _wall;
 
         public TerrainTileDefinition()
         {
             _fringe = new Dictionary<int, Rect>();
+            _wall = new Dictionary<int, Rect>();
         }
 
         public Rect Floor
@@ -32,6 +34,14 @@
             get
             {
                 return _fringe;
+            }
+        }
+
+        public Dictionary<int, Rect> Walls
+        {
+            get
+            {
+                return _wall;
             }
         }
     }

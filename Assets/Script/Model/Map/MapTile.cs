@@ -3,23 +3,17 @@ namespace Model.Map
 {
     using System.Collections.Generic;
 
-    public class Fringe
-    {
-        public Edge Edge;
-        public Corner Corner;
-    }
-
     public class MapTile
     {
-        private class TileFringe
+        private class TileTerrain
         {
-            public TileFringe(MapTerrain terrain)
+            public TileTerrain(MapTerrain terrain)
             {
-                Fringe = TileCompass.None;
+                Edges = TileCompass.None;
                 Terrain = terrain;
             }
 
-            public TileCompass Fringe;
+            public TileCompass Edges;
             public MapTerrain Terrain;
         }
 
@@ -28,7 +22,8 @@ namespace Model.Map
         private int _row;
         private bool _isWall;
         private MapTerrain _terrain;
-        private Dictionary<MapTerrain, TileFringe> _fringe;
+        private Dictionary<MapTerrain, TileTerrain> _fringe;
+        private Dictionary<MapTerrain, TileTerrain> _walls;
 
         public MapTile(Map map, int column, int row)
         {
@@ -36,7 +31,8 @@ namespace Model.Map
             _column = column;
             _row = row;
             _isWall = false;
-            _fringe = new Dictionary<MapTerrain, TileFringe>();
+            _fringe = new Dictionary<MapTerrain, TileTerrain>();
+            _walls = new Dictionary<MapTerrain, TileTerrain>();
         }
 
         public MapTerrain Terrain
@@ -85,41 +81,101 @@ namespace Model.Map
 
         public void SetFringe(MapTerrain terrain, TileCompass fringe)
         {
-            TileFringe tileFringe;
+            TileTerrain tileFringe;
             if (_fringe.ContainsKey(terrain))
             {
                 tileFringe = _fringe[terrain];
             }
             else
             {
-                tileFringe = new TileFringe(terrain);
+                tileFringe = new TileTerrain(terrain);
                 _fringe[terrain] = tileFringe;
             }
 
-            tileFringe.Fringe = fringe;
+            tileFringe.Edges = fringe;
+        }
+
+        public void SetWalls(MapTerrain terrain, TileCompass sides)
+        {
+            TileTerrain tileWalls;
+            if (_walls.ContainsKey(terrain))
+            {
+                tileWalls = _walls[terrain];
+            }
+            else
+            {
+                tileWalls = new TileTerrain(terrain);
+                _walls[terrain] = tileWalls;
+            }
+
+            tileWalls.Edges = sides;
         }
 
         public void AddFringe(MapTerrain terrain, TileCompass fringe)
         {
-            TileFringe tileFringe;
+            TileTerrain tileFringe;
             if (_fringe.ContainsKey(terrain))
             {
                 tileFringe = _fringe[terrain];
             }
             else
             {
-                tileFringe = new TileFringe(terrain);
+                tileFringe = new TileTerrain(terrain);
                 _fringe[terrain] = tileFringe;
             }
 
-            tileFringe.Fringe |= fringe;
+            tileFringe.Edges |= fringe;
+        }
+
+        public void AddWall(MapTerrain terrain, TileCompass edge)
+        {
+            TileTerrain tileWalls;
+            if (_walls.ContainsKey(terrain))
+            {
+                tileWalls = _walls[terrain];
+            }
+            else
+            {
+                tileWalls = new TileTerrain(terrain);
+                _walls[terrain] = tileWalls;
+            }
+
+            tileWalls.Edges |= edge;
+        }
+
+        public void RemoveWall(MapTerrain terrain, TileCompass edge)
+        {
+            TileTerrain tileWalls;
+            if (_walls.ContainsKey(terrain))
+            {
+                tileWalls = _walls[terrain];
+            }
+            else
+            {
+                tileWalls = new TileTerrain(terrain);
+                _walls[terrain] = tileWalls;
+            }
+
+            tileWalls.Edges &= ~edge;
         }
 
         public TileCompass GetFringe(MapTerrain terrain)
         {
             if (_fringe.ContainsKey(terrain))
             {
-                return _fringe[terrain].Fringe;
+                return _fringe[terrain].Edges;
+            }
+            else
+            {
+                return TileCompass.None;
+            }
+        }
+
+        public TileCompass GetWalls(MapTerrain terrain)
+        {
+            if (_walls.ContainsKey(terrain))
+            {
+                return _walls[terrain].Edges;
             }
             else
             {

@@ -30,8 +30,10 @@ namespace Model.Map
             for (int i = 0; i < count; i++)
             {
                 //_map.Tile[r.Next(_map.Width), r.Next(_map.Height)].Terrain.Floor = _terrain["grass"];
-                //map.Tile[r.Next(width), r.Next(height)].IsWall = true;
-                map.Tile[rand.Next(width), rand.Next(height)].Terrain = terrains[rand.Next(terrains.Count)];
+                MapTile tile = map.Tile[rand.Next(width), rand.Next(height)];
+                MapTerrain terrain = terrains[rand.Next(terrains.Count)];
+                tile.Terrain = terrain;
+                tile.IsWall = terrain.Walls;
             }
 
             map.EndCreate();

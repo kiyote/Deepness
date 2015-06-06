@@ -1,4 +1,6 @@
 ﻿
+#define THREADED_MAPCHUNK
+
 namespace View.Map
 {
     using UnityEngine;
@@ -21,6 +23,8 @@ namespace View.Map
 
         private MeshRenderer _meshRenderer;
         private MeshFilter _meshFilter;
+
+#if THREADED_MAPCHUNK
         private ThreadedGenerator _job;
 
         private class ThreadedGenerator: ThreadedJob
@@ -52,6 +56,9 @@ namespace View.Map
                 _generator.PopulateMesh(mr, mf);
             }
         }
+#else
+        private MapChunkGenerator _generator;
+#endif
 
         public void Populate(Map map, int startColumn, int startRow, TerrainTextureDefinition ttd)
         {
@@ -59,19 +66,29 @@ namespace View.Map
             {
                 _meshRenderer = GetComponent<MeshRenderer>();
                 _meshFilter = GetComponent<MeshFilter>();
+#if !THREADED_MAPCHUNK
+                _generator = new MapChunkGenerator();
+#endif
             }
 
+#if THREADED_MAPCHUNK
             _job = new ThreadedGenerator(map, startColumn, startRow, ttd, Game.Instance.Terrain);
             _job.Start();
+#else
+            _generator.Generate(map, startColumn, startRow, Game.Instance.Terrain.Terrain, ttd);
+            _generator.PopulateMesh(_meshRenderer, _meshFilter);
+#endif
         }
         
         void Update()
         {
+#if THREADED_MAPCHUNK
             if ((_job != null) && (_job.IsDone))
             {
                 _job.PopulateMesh(_meshRenderer, _meshFilter);
                 _job = null;
             }
+#endif
         }
 
         public void OnPointerClick(PointerEventData eventData)

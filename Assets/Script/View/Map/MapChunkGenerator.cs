@@ -73,7 +73,7 @@ namespace View.Map
                         if (mapTile != null)
                         {
                             Rect uvc = ttd.ByTerrain(mapTile.Terrain).Floor;
-                            GenerateTile(c, r, ref uvc);
+                            GenerateTile(c, r, y, ref uvc);
 
                             foreach (MapTerrain terrain in terrains)
                             {
@@ -89,12 +89,33 @@ namespace View.Map
                                     if (target.Fringe.ContainsKey((int)fringe))
                                     {
                                         uvc = target.Fringe[(int)fringe];
-                                        GenerateTile(c, r, ref uvc);
+                                        GenerateTile(c, r, y, ref uvc);
                                     }
                                     else
                                     {
                                         throw new InvalidOperationException(String.Format("Unable to locate edge '{0}'", fringe));
                                     }
+                                }
+                            }
+
+                            if (mapTile.IsWall)
+                            {
+                                TileCompass walls = mapTile.GetWalls(mapTile.Terrain);
+                                TerrainTileDefinition target = ttd.ByTerrain(mapTile.Terrain);
+                                if (target == null)
+                                {
+                                    throw new InvalidOperationException(string.Format("Unable to locate terrain '{0}'", mapTile.Terrain.Name));
+                                }
+
+                                if (target.Walls.ContainsKey((int)walls))
+                                {
+                                    uvc = target.Walls[(int)walls];
+                                    GenerateTile(c, r, y, ref uvc);
+                                }
+                                else
+                                {
+                                    Debug.LogWarning(String.Format("Unable to locate wall '{0}' ({1}) for '{2}'", walls, (int)walls, mapTile.Terrain.Name));
+                                    //throw new InvalidOperationException(String.Format("Unable to locate wall '{0}'", walls));
                                 }
                             }
                         }
@@ -103,13 +124,13 @@ namespace View.Map
             }
         }
 
-        private void GenerateTile(int c, int r, ref Rect uvc)
+        private void GenerateTile(int c, int r, int z, ref Rect uvc)
         {
             int vertexIndex = _vertices.Count;
-            _vertices.Add(new Vector3(c + -0.5f, r + -0.5f, 0));
-            _vertices.Add(new Vector3(c + 0.5f, r + -0.5f, 0));
-            _vertices.Add(new Vector3(c + 0.5f, r + 0.5f, 0));
-            _vertices.Add(new Vector3(c + -0.5f, r + 0.5f, 0));
+            _vertices.Add(new Vector3(c + -0.5f, r + -0.5f, z));
+            _vertices.Add(new Vector3(c + 0.5f, r + -0.5f, z));
+            _vertices.Add(new Vector3(c + 0.5f, r + 0.5f, z));
+            _vertices.Add(new Vector3(c + -0.5f, r + 0.5f, z));
 
             _triangles.Add(vertexIndex + 3);
             _triangles.Add(vertexIndex + 2);
