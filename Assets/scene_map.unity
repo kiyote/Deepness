@@ -797,8 +797,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1547634014}
-        m_MethodName: Terminate
+      - m_Target: {fileID: 73200126}
+        m_MethodName: Quit
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -953,10 +953,7 @@ GameObject:
   - 114: {fileID: 1547634009}
   - 114: {fileID: 1547634008}
   - 114: {fileID: 1547634007}
-  - 114: {fileID: 1547634013}
-  - 114: {fileID: 1547634014}
   - 114: {fileID: 1547634011}
-  - 114: {fileID: 1547634012}
   m_Layer: 0
   m_Name: EventSystem
   m_TagString: Untagged
@@ -1028,39 +1025,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 78b243f2956802c4e893a90508d1f8aa, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1547634012
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1547634006}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: be51817c2f66cf24e9fe6f8470233f48, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1547634013
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1547634006}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3404580892be7b04a8a38585b87df023, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1547634014
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1547634006}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 365b442d95c98cb429cef19b49999ec7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1570244473
