@@ -56,9 +56,6 @@
     <Reference Include="UnityEngine.UI">
       <HintPath>Library\UnityAssemblies\UnityEngine.UI.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEngine.UI">
-      <HintPath>Library\UnityAssemblies\UnityEngine.UI.dll</HintPath>
-    </Reference>
     <Reference Include="UnityEditor.iOS.Extensions.Xcode">
       <HintPath>Library\UnityAssemblies\UnityEditor.iOS.Extensions.Xcode.dll</HintPath>
     </Reference>
@@ -74,7 +71,9 @@
     <Compile Include="Assets\Script\Model\Game.cs" />
     <Compile Include="Assets\Script\Model\Map\Corner.cs" />
     <Compile Include="Assets\Script\Model\Map\Edge.cs" />
+    <Compile Include="Assets\Script\Model\Map\FeatureDefinition.cs" />
     <Compile Include="Assets\Script\Model\Map\Map.cs" />
+    <Compile Include="Assets\Script\Model\Map\MapFeature.cs" />
     <Compile Include="Assets\Script\Model\Map\MapGenerator.cs" />
     <Compile Include="Assets\Script\Model\Map\MapTerrain.cs" />
     <Compile Include="Assets\Script\Model\Map\MapTile.cs" />
@@ -90,6 +89,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Resources\Texture\terrain.txt" />
+    <None Include="Assets\Resources\feature_definition.txt" />
     <None Include="Assets\Resources\terrain_definition.txt" />
     <None Include="Assets\Shaders\UnlitTransparentColor.shader" />
   </ItemGroup>

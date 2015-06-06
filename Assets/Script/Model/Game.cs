@@ -8,11 +8,13 @@ public class Game
 
     private Map _map;
     private TerrainDefinition _terrain;
+    private FeatureDefinition _feature;
 
 	public Game ()
 	{
         _map = new Map();
         _terrain = new TerrainDefinition();
+        _feature = new FeatureDefinition();
 	}
 
 	public static Game Instance
@@ -36,6 +38,14 @@ public class Game
         get
         {
             return _terrain;
+        }
+    }
+
+    public FeatureDefinition Feature
+    {
+        get
+        {
+            return _feature;
         }
     }
 

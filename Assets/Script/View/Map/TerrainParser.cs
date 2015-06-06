@@ -17,7 +17,7 @@ namespace View.Map
         // Use this for initialization
         void Start()
         {
-            MessageBus.Get().Subscribe<InitializeSystemEvent>(InitializingSystems);
+            MessageBus.Get.Subscribe<InitializeSystemEvent>(InitializingSystems);
         }
 
         // Update is called once per frame
@@ -34,6 +34,7 @@ namespace View.Map
             TerrainMaterial.mainTexture = t;
 
             LoadTerrains();
+            LoadFeatures();
             LoadTerrainDefinition(t.width, t.height);
         }
 
@@ -44,7 +45,29 @@ namespace View.Map
             foreach (string s in lines)
             {
                 string line = s.Trim();
-                if (!line.StartsWith("#"))
+                if (!string.IsNullOrEmpty(line) && (!line.StartsWith("#")))
+                {
+                    string[] parts = line.Split('=');
+
+                    int id = int.Parse(parts[0]);
+
+                    string[] values = parts[1].Split(',');
+                    string name = values[0];
+                    bool walls = bool.Parse(values[1]);
+
+                    Game.Instance.Terrain.Add(new MapTerrain(id, name, walls));
+                }
+            }
+        }
+
+        private void LoadFeatures()
+        {
+            TextAsset defn = (TextAsset)Resources.Load(@"feature_definition", typeof(TextAsset));
+            string[] lines = defn.text.Split('\n');
+            foreach (string s in lines)
+            {
+                string line = s.Trim();
+                if (!string.IsNullOrEmpty(line) && (!line.StartsWith("#")))
                 {
                     string[] parts = line.Split('=');
 
@@ -54,7 +77,7 @@ namespace View.Map
                     string name = values[0];
                     bool blocking = bool.Parse(values[1]);
 
-                    Game.Instance.Terrain.Add(new MapTerrain(id, name, blocking));
+                    Game.Instance.Feature.Add(new MapFeature(id, name, blocking));
                 }
             }
         }
@@ -67,33 +90,42 @@ namespace View.Map
 
             foreach (SpriteSheetParser.Entry entry in entries)
             {
-                MapTerrain t = Game.Instance.Terrain.ByName(entry.Terrain);
-                TerrainTileDefinition tileDefn = _definition.ByTerrain(t);
-                if (tileDefn == null)
+                if ((String.Equals(entry.Type, "floor", StringComparison.OrdinalIgnoreCase)) ||
+                   (String.Equals(entry.Type, "edge", StringComparison.OrdinalIgnoreCase)) ||
+                   (String.Equals(entry.Type, "wall", StringComparison.OrdinalIgnoreCase)))
                 {
-                    tileDefn = _definition.Create(t);
-                }
-
-                if (string.Compare(entry.Type, "floor", System.StringComparison.OrdinalIgnoreCase) == 0)
-                {
-                    if (_tileSize == 0)
+                    MapTerrain t = Game.Instance.Terrain.ByName(entry.Name);
+                    TerrainTileDefinition tileDefn = _definition.ByTerrain(t);
+                    if (tileDefn == null)
                     {
-                        _tileSize = 24;
+                        tileDefn = _definition.Create(t);
                     }
 
-                    tileDefn.Floor = entry.Coordinates;
+                    if (string.Compare(entry.Type, "floor", System.StringComparison.OrdinalIgnoreCase) == 0)
+                    {
+                        if (_tileSize == 0)
+                        {
+                            _tileSize = 24;
+                        }
+
+                        tileDefn.Floor = entry.Coordinates;
+                    }
+                    else if (string.Compare(entry.Type, "edge", System.StringComparison.OrdinalIgnoreCase) == 0)
+                    {
+                        tileDefn.Fringe[entry.Value] = entry.Coordinates;
+                    }
+                    else if (string.Compare(entry.Type, "wall", System.StringComparison.OrdinalIgnoreCase) == 0)
+                    {
+                        tileDefn.Walls[entry.Value] = entry.Coordinates;
+                    }
                 }
-                else if (string.Compare(entry.Type, "edge", System.StringComparison.OrdinalIgnoreCase) == 0)
+                else if (String.Equals(entry.Type, "feature", StringComparison.OrdinalIgnoreCase))
                 {
-                    tileDefn.Fringe[entry.Value] = entry.Coordinates;
-                }
-                else if (string.Compare(entry.Type, "wall", System.StringComparison.OrdinalIgnoreCase) == 0)
-                {
-                    tileDefn.Walls[entry.Value] = entry.Coordinates;
+
                 }
             }
 
-            MessageBus.Get().Publish<TerrainParsedEvent>(this, new TerrainParsedEvent(_definition));
+            MessageBus.Get.Publish<TerrainParsedEvent>(this, new TerrainParsedEvent(_definition));
         }
     }
 }

@@ -70,7 +70,7 @@ public class CameraBehaviour : MonoBehaviour {
 		if (dirty)
 		{
 			GetComponent<Camera>().UpdateOrthographicBounds();
-            MessageBus.Get().Publish<CameraUpdateEvent>(this, new CameraUpdateEvent(GetComponent<Camera>().OrthographicBounds()));
+            MessageBus.Get.Publish<CameraUpdateEvent>(this, new CameraUpdateEvent(GetComponent<Camera>().OrthographicBounds()));
 		}
 	}
 	

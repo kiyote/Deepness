@@ -10,7 +10,7 @@ public class Panel_MainMenu : MonoBehaviour {
 	void Start () {
         _animator = GetComponent<Animator>();
 
-        MessageBus.Get().Subscribe<MainMenuEvent>(MainMenuHandler);
+        MessageBus.Get.Subscribe<MainMenuEvent>(MainMenuHandler);
 	}
 	
 	// Update is called once per frame
@@ -32,11 +32,11 @@ public class Panel_MainMenu : MonoBehaviour {
 
     public void StartNewGame()
     {
-        MessageBus.Get().Publish<StartNewGameEvent>(this, new StartNewGameEvent());
+        MessageBus.Get.Publish<StartNewGameEvent>(this, new StartNewGameEvent());
     }
 
     public void Quit()
     {
-        MessageBus.Get().Publish<TerminateEvent>(this, new TerminateEvent());
+        MessageBus.Get.Publish<TerminateEvent>(this, new TerminateEvent());
     }
 }

@@ -12,8 +12,7 @@ public class MessageBus
     private readonly Dictionary<Type, List<object>> _eventHandlers;
 #endif
 
-    private static object _lock = new object();
-    private static MessageBus _instance;
+    private static MessageBus _instance = new MessageBus();
 
     public MessageBus()
     {
@@ -25,15 +24,10 @@ public class MessageBus
 #endif
     }
 
-    public static MessageBus Get()
+    public static MessageBus Get
     {
-        lock(_lock)
+        get
         {
-            if (_instance == null)
-            {
-                _instance = new MessageBus();
-            }
-
             return _instance;
         }
     }

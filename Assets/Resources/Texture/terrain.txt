@@ -78,3 +78,4 @@ stone_wall_90 = 200 125 24 24
 stone_wall_91 = 175 150 24 24
 stone_wall_94 = 150 175 24 24
 stone_wall_95 = 125 200 24 24
+tree_feature_0 = 175 175 24 24

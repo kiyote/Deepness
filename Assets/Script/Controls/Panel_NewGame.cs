@@ -12,7 +12,7 @@ public class Panel_NewGame : MonoBehaviour {
     void Awake()
     {
         _animator = GetComponent<Animator>();
-        MessageBus.Get().Subscribe<NewGameMenuEvent>(NewGameMenuHandler);
+        MessageBus.Get.Subscribe<NewGameMenuEvent>(NewGameMenuHandler);
     }
 	
     private void NewGameMenuHandler(object sender, NewGameMenuEvent e)
@@ -33,6 +33,6 @@ public class Panel_NewGame : MonoBehaviour {
 
     public void CreateGame()
     {
-        MessageBus.Get().Publish<CreateGameEvent>(this, new CreateGameEvent(500, 500));
+        MessageBus.Get.Publish<CreateGameEvent>(this, new CreateGameEvent(500, 500));
     }
 }

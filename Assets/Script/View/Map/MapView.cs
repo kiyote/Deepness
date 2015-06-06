@@ -49,9 +49,9 @@ namespace View.Map
 
         void Start()
         {
-            MessageBus.Get().Subscribe<CreateMapEvent>(CreateMapHandler);
-            MessageBus.Get().Subscribe<CameraUpdateEvent>(CameraUpdateHandler);
-            MessageBus.Get().Subscribe<TerrainParsedEvent>(TerrainParsedHandler);
+            MessageBus.Get.Subscribe<CreateMapEvent>(CreateMapHandler);
+            MessageBus.Get.Subscribe<CameraUpdateEvent>(CameraUpdateHandler);
+            MessageBus.Get.Subscribe<TerrainParsedEvent>(TerrainParsedHandler);
 
             _blockCache = GameObject.Find(BlockCacheObjectName);
 

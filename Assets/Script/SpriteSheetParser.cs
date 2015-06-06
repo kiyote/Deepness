@@ -8,15 +8,15 @@ public class SpriteSheetParser
 {
     public class Entry
     {
-        internal Entry(string terrain, string type, int value, Rect coordinates)
+        internal Entry(string name, string type, int value, Rect coordinates)
         {
-            Terrain = terrain;
+            Name = name;
             Type = type;
             Value = value;
             Coordinates = coordinates;
         }
 
-        public string Terrain { get; private set; }
+        public string Name { get; private set; }
         public string Type { get; private set; }
         public int Value { get; private set; }
         public Rect Coordinates { get; private set; }
@@ -87,7 +87,7 @@ public class SpriteSheetParser
             return null;
         }
 
-        string terrain = descriptors[0].Trim();
+        string name = descriptors[0].Trim();
         string type = descriptors[1].Trim();
         int value = int.Parse(descriptors[2].Trim());
 
@@ -97,6 +97,6 @@ public class SpriteSheetParser
         float height = float.Parse(coordinates[3].Trim());
 
         Rect rect = new Rect(left / textureWidth, (textureHeight - (top + height)) / textureHeight, (left + width) / textureWidth, (textureHeight - top) / textureHeight);
-        return new Entry(terrain, type, value, rect);
+        return new Entry(name, type, value, rect);
     }
 }
