@@ -51,6 +51,8 @@
      <Compile Include="Assets\Script\Controller.cs" />
      <Compile Include="Assets\Script\Controls\Panel_MainMenu.cs" />
      <Compile Include="Assets\Script\Controls\Panel_NewGame.cs" />
+     <Compile Include="Assets\Script\Events.cs" />
+     <Compile Include="Assets\Script\MessageBus.cs" />
      <Compile Include="Assets\Script\Model\Game.cs" />
      <Compile Include="Assets\Script\Model\Map\Corner.cs" />
      <Compile Include="Assets\Script\Model\Map\Edge.cs" />
@@ -60,11 +62,8 @@
      <Compile Include="Assets\Script\Model\Map\MapTile.cs" />
      <Compile Include="Assets\Script\Model\Map\TerrainDefinition.cs" />
      <Compile Include="Assets\Script\Model\Map\TileCompass.cs" />
-     <Compile Include="Assets\Script\SceneEvents.cs" />
      <Compile Include="Assets\Script\SpriteSheetParser.cs" />
-     <Compile Include="Assets\Script\SystemEvents.cs" />
      <Compile Include="Assets\Script\ThreadedJob.cs" />
-     <Compile Include="Assets\Script\UIEvents.cs" />
      <Compile Include="Assets\Script\View\Map\MapChunk.cs" />
      <Compile Include="Assets\Script\View\Map\MapChunkGenerator.cs" />
      <Compile Include="Assets\Script\View\Map\MapView.cs" />

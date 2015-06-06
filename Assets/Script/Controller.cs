@@ -4,28 +4,36 @@ using Model.Map;
 
 public class Controller : MonoBehaviour {
 
-	void Start () 
+    void Awake()
     {
-        SceneEvents.StartingNewGame += StartNewGame;
-        SceneEvents.CreatingGame += CreateGame;
-
-        SystemEvents.Instance.InitializeSystems(); // Cause all dynamic data to be loaded
-        UIEvents.Instance.ShowMainMenu(); // Trigger the main menu
-
-	}
-	
-    private void StartNewGame(object sender, EventArgs e)
-    {
-        UIEvents.Instance.HideMainMenu();
-        UIEvents.Instance.ShowNewGameMenu();
+        MessageBus.Get().Subscribe<StartNewGameEvent>(StartNewGameHandler);
+        MessageBus.Get().Subscribe<CreateGameEvent>(CreateGameHandler);
+        MessageBus.Get().Subscribe<TerminateEvent>(TerminateHandler);
     }
 
-    private void CreateGame(object sender, CreateGameEventArgs e)
+	void Start() 
+    {
+        MessageBus.Get().Publish<InitializeSystemEvent>(this, new InitializeSystemEvent()); // Cause all dynamic data to be loaded
+        MessageBus.Get().Publish<MainMenuEvent>(this, new MainMenuEvent(true)); // Show the main menu
+	}
+	
+    private void StartNewGameHandler(object sender, StartNewGameEvent e)
+    {
+        MessageBus.Get().Publish<MainMenuEvent>(this, new MainMenuEvent(false)); // hide the main menu
+        MessageBus.Get().Publish<NewGameMenuEvent>(this, new NewGameMenuEvent(true)); // show the new game menu
+    }
+
+    private void CreateGameHandler(object sender, CreateGameEvent e)
     {
         MapGenerator mg = new MapGenerator();
         mg.Generate(Game.Instance.Map, 500, 500);
 
-        SceneEvents.Instance.CreateMap(Game.Instance.Map);
-        UIEvents.Instance.HideNewGameMenu();
+        MessageBus.Get().Publish<CreateMapEvent>(this, new CreateMapEvent(Game.Instance.Map));
+        MessageBus.Get().Publish<NewGameMenuEvent>(this, new NewGameMenuEvent(false));
+    }
+
+    private void TerminateHandler(object sender, TerminateEvent e)
+    {
+        Application.Quit();
     }
 }

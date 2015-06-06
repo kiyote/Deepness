@@ -7,14 +7,16 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{6FCA17C5-3C4C-B9A3-39B9-E000C681C76B}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace></RootNamespace>
+    <RootNamespace>
+    </RootNamespace>
     <AssemblyName>Assembly-CSharp</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{E097FAD1-6243-4DAD-9C02-E9B9EFC3FFC1};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <TargetFrameworkIdentifier>.NETFramework</TargetFrameworkIdentifier>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <TargetFrameworkProfile>Unity Subset v3.5</TargetFrameworkProfile>
-    <CompilerResponseFile></CompilerResponseFile>
+    <CompilerResponseFile>
+    </CompilerResponseFile>
     <UnityProjectType>Game:1</UnityProjectType>
     <UnityBuildTarget>StandaloneWindows:5</UnityBuildTarget>
     <UnityVersion>5.0.2f1</UnityVersion>
@@ -67,6 +69,8 @@
     <Compile Include="Assets\Script\Controller.cs" />
     <Compile Include="Assets\Script\Controls\Panel_MainMenu.cs" />
     <Compile Include="Assets\Script\Controls\Panel_NewGame.cs" />
+    <Compile Include="Assets\Script\Events.cs" />
+    <Compile Include="Assets\Script\MessageBus.cs" />
     <Compile Include="Assets\Script\Model\Game.cs" />
     <Compile Include="Assets\Script\Model\Map\Corner.cs" />
     <Compile Include="Assets\Script\Model\Map\Edge.cs" />
@@ -76,11 +80,8 @@
     <Compile Include="Assets\Script\Model\Map\MapTile.cs" />
     <Compile Include="Assets\Script\Model\Map\TerrainDefinition.cs" />
     <Compile Include="Assets\Script\Model\Map\TileCompass.cs" />
-    <Compile Include="Assets\Script\SceneEvents.cs" />
     <Compile Include="Assets\Script\SpriteSheetParser.cs" />
-    <Compile Include="Assets\Script\SystemEvents.cs" />
     <Compile Include="Assets\Script\ThreadedJob.cs" />
-    <Compile Include="Assets\Script\UIEvents.cs" />
     <Compile Include="Assets\Script\View\Map\MapChunk.cs" />
     <Compile Include="Assets\Script\View\Map\MapChunkGenerator.cs" />
     <Compile Include="Assets\Script\View\Map\MapView.cs" />

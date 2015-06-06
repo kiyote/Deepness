@@ -7,23 +7,32 @@ public class Panel_NewGame : MonoBehaviour {
     private Animator _animator;
 
 	void Start () {
-        _animator = GetComponent<Animator>();
-        UIEvents.ShowingNewGameMenu += Show;
-        UIEvents.HidingNewGameMenu += Hide;
 	}
-	
-    private void Show(object sender, EventArgs e)
+
+    void Awake()
     {
-        _animator.SetTrigger("FadeIn");
+        _animator = GetComponent<Animator>();
+        MessageBus.Get().Subscribe<NewGameMenuEvent>(NewGameMenuHandler);
+    }
+	
+    private void NewGameMenuHandler(object sender, NewGameMenuEvent e)
+    {
+        if (e.Show)
+        {
+            _animator.SetTrigger("FadeIn");
+        }
+        else
+        {
+            _animator.SetTrigger("FadeOut");
+        }
     }
 
     private void Hide(object sender, EventArgs e)
     {
-        _animator.SetTrigger("FadeOut");
     }
 
     public void CreateGame()
     {
-        SceneEvents.Instance.CreateGame(500, 500);
+        MessageBus.Get().Publish<CreateGameEvent>(this, new CreateGameEvent(500, 500));
     }
 }

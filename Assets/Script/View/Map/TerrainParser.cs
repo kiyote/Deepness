@@ -17,7 +17,7 @@ namespace View.Map
         // Use this for initialization
         void Start()
         {
-            SystemEvents.InitializingSystems += InitializingSystems;
+            MessageBus.Get().Subscribe<InitializeSystemEvent>(InitializingSystems);
         }
 
         // Update is called once per frame
@@ -26,7 +26,7 @@ namespace View.Map
 
         }
 
-        private void InitializingSystems(object sender, EventArgs e)
+        private void InitializingSystems(object sender, InitializeSystemEvent e)
         {
             _definition = new TerrainTextureDefinition(TerrainMaterial);
 
@@ -93,7 +93,7 @@ namespace View.Map
                 }
             }
 
-            SystemEvents.Instance.TerrainParse(_definition);
+            MessageBus.Get().Publish<TerrainParsedEvent>(this, new TerrainParsedEvent(_definition));
         }
     }
 }

@@ -10,8 +10,7 @@ public class Panel_MainMenu : MonoBehaviour {
 	void Start () {
         _animator = GetComponent<Animator>();
 
-        UIEvents.ShowingMainMenu += Show;
-        UIEvents.HidingMainMenu += Hide;
+        MessageBus.Get().Subscribe<MainMenuEvent>(MainMenuHandler);
 	}
 	
 	// Update is called once per frame
@@ -19,18 +18,25 @@ public class Panel_MainMenu : MonoBehaviour {
 	
 	}
 
-    private void Show(object sender, EventArgs e)
+    private void MainMenuHandler(object sender, MainMenuEvent e)
     {
-        _animator.SetTrigger("FadeIn");
-    }
-
-    private void Hide(object sender, EventArgs e)
-    {
-        _animator.SetTrigger("FadeOut");
+        if (e.Show)
+        {
+            _animator.SetTrigger("FadeIn");
+        }
+        else
+        {
+            _animator.SetTrigger("FadeOut");
+        }
     }
 
     public void StartNewGame()
     {
-        SceneEvents.Instance.StartNewGame();
+        MessageBus.Get().Publish<StartNewGameEvent>(this, new StartNewGameEvent());
+    }
+
+    public void Quit()
+    {
+        MessageBus.Get().Publish<TerminateEvent>(this, new TerminateEvent());
     }
 }

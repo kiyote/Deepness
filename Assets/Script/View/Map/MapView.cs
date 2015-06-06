@@ -49,9 +49,9 @@ namespace View.Map
 
         void Start()
         {
-            SceneEvents.CreatingMap += CreateMap;
-            SystemEvents.TerrainParsed += TerrainParsed;
-            SystemEvents.CameraUpdated += CameraUpdated;
+            MessageBus.Get().Subscribe<CreateMapEvent>(CreateMapHandler);
+            MessageBus.Get().Subscribe<CameraUpdateEvent>(CameraUpdateHandler);
+            MessageBus.Get().Subscribe<TerrainParsedEvent>(TerrainParsedHandler);
 
             _blockCache = GameObject.Find(BlockCacheObjectName);
 
@@ -73,12 +73,12 @@ namespace View.Map
         }
 
         #region Event Handlers
-        private void TerrainParsed(object sender, TerrainParsedEventArgs e)
+        private void TerrainParsedHandler(object sender, TerrainParsedEvent e)
         {
             _ttd = e.TerrainTextureDefinition;
         }
 
-        private void CreateMap(object sender, CreateMapEventArgs e)
+        private void CreateMapHandler(object sender, CreateMapEvent e)
         {
             Populate(e.Map);
         }
@@ -95,7 +95,7 @@ namespace View.Map
             _map.EndUpdate();
         }
 
-        private void CameraUpdated(object sender, CameraUpdateEventArgs e)
+        private void CameraUpdateHandler(object sender, CameraUpdateEvent e)
         {
             if (_map != null)
             {
