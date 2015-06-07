@@ -22,18 +22,19 @@ namespace Model.Map
             {
                 for (int c = 0; c < map.Width; c++)
                 {
-                    map.Tile[c, r].Terrain = terrains[0];
+                    Tile tile = map.Tile[c, r];
+                    tile.Terrain = terrains[0];
+                    //tile.IsWall = terrains[0].Walls;
                 }
             }
 
             int count = (int)((float)(width * height) * 0.5f);
             for (int i = 0; i < count; i++)
             {
-                //_map.Tile[r.Next(_map.Width), r.Next(_map.Height)].Terrain.Floor = _terrain["grass"];
-                MapTile tile = map.Tile[rand.Next(width), rand.Next(height)];
+                Tile tile = map.Tile[rand.Next(width), rand.Next(height)];
                 MapTerrain terrain = terrains[rand.Next(terrains.Count)];
                 tile.Terrain = terrain;
-                tile.IsWall = terrain.Walls;
+                //tile.IsWall = terrain.Walls;
             }
 
             map.EndCreate();

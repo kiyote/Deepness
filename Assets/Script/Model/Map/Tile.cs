@@ -3,7 +3,7 @@ namespace Model.Map
 {
     using System.Collections.Generic;
 
-    public class MapTile
+    public class Tile
     {
         private class TileTerrain
         {
@@ -25,7 +25,7 @@ namespace Model.Map
         private Dictionary<MapTerrain, TileTerrain> _fringe;
         private Dictionary<MapTerrain, TileTerrain> _walls;
 
-        public MapTile(Map map, int column, int row)
+        public Tile(Map map, int column, int row)
         {
             _map = map;
             _column = column;

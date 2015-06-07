@@ -68,7 +68,7 @@ namespace View.Map
 
                     if ((x >= 0) && (x < map.Width) && (y >= 0) && (y < map.Height))
                     {
-                        MapTile mapTile = map.Tile[x, y];
+                        Tile mapTile = map.Tile[x, y];
 
                         if (mapTile != null)
                         {
@@ -93,7 +93,11 @@ namespace View.Map
                                     }
                                     else
                                     {
-                                        throw new InvalidOperationException(String.Format("Unable to locate edge '{0}'", fringe));
+                                        if (mapTile.Terrain.Name == "grass")
+                                        {
+                                            Debug.Log(String.Format("Unable to locate edge '{0}' ({1}) for '{2}'.", fringe, (int)fringe, mapTile.Terrain.Name));
+                                        }
+                                        //throw new InvalidOperationException(String.Format("Unable to locate edge '{0}'", fringe));
                                     }
                                 }
                             }

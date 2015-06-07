@@ -3,8 +3,8 @@ namespace Model.Map
 {
     using System.Collections.Generic;
 
-    public delegate void MapChangedEventHandler(Map map, int column, int row, MapTile mapTile);
-    public delegate void MapBatchChangedEventHandler(Map map, List<MapTile> dirtyTiles);
+    public delegate void MapChangedEventHandler(Map map, int column, int row, Tile mapTile);
+    public delegate void MapBatchChangedEventHandler(Map map, List<Tile> dirtyTiles);
 
     public class Map
     {
@@ -12,18 +12,18 @@ namespace Model.Map
 
         private int _width;
         private int _height;
-        private MapTile[,] _tiles;
+        private Tile[,] _tiles;
 
         public event MapChangedEventHandler MapChanged;
         public event MapBatchChangedEventHandler MapBatchChanged;
         private bool _inBatch;
-        private List<MapTile> _dirtyTiles;
+        private List<Tile> _dirtyTiles;
         private bool _creating;
 
         public Map()
         {
             _inBatch = false;
-            _dirtyTiles = new List<MapTile>();
+            _dirtyTiles = new List<Tile>();
             _creating = false;
         }
 
@@ -31,13 +31,13 @@ namespace Model.Map
         {
             _width = tileWidth;
             _height = tileHeight;
-            _tiles = new MapTile[tileWidth, tileHeight];
+            _tiles = new Tile[tileWidth, tileHeight];
 
             for (int y = 0; y < tileHeight; y++)
             {
                 for (int x = 0; x < tileWidth; x++)
                 {
-                    _tiles[x, y] = new MapTile(this, x, y);
+                    _tiles[x, y] = new Tile(this, x, y);
                 }
             }
         }
@@ -60,7 +60,7 @@ namespace Model.Map
             _inBatch = true;
         }
 
-        public void SignalMapChanged(MapTile mapTile)
+        public void SignalMapChanged(Tile mapTile)
         {
             if (_creating)
             {
@@ -110,7 +110,7 @@ namespace Model.Map
             }
         }
 
-        public MapTile[,] Tile
+        public Tile[,] Tile
         {
             get
             {
@@ -119,7 +119,7 @@ namespace Model.Map
         }
 
 
-        private MapTile GetTile(int col, int row)
+        private Tile GetTile(int col, int row)
         {
             if ((col >= 0) && (col < _width) && (row >= 0) && (row < _height))
             {
@@ -137,40 +137,71 @@ namespace Model.Map
             {
                 for (int col = 0; col < _width; col++)
                 {
-                    MapTile tile = _tiles[col, row];
+                    Tile tile = _tiles[col, row];
 
-                    MapTile up = GetTile(col, row + 1);
-                    MapTile left = GetTile(col - 1, row);
-                    MapTile right = GetTile(col + 1, row);
-                    MapTile down = GetTile(col, row - 1);
+                    Tile up = GetTile(col, row + 1);
+                    Tile left = GetTile(col - 1, row);
+                    Tile right = GetTile(col + 1, row);
+                    Tile down = GetTile(col, row - 1);
+                    Tile upLeft = GetTile(col - 1, row + 1);
+                    Tile upRight = GetTile(col + 1, row + 1);
+                    Tile downLeft = GetTile(col - 1, row - 1);
+                    Tile downRight = GetTile(col + 1, row - 1);
+
+                    if ((upLeft != null) && (upLeft.Terrain.Id > tile.Terrain.Id))
+                    {
+                        tile.AddFringe(upLeft.Terrain, TileCompass.TopLeft);
+                    }
+
+                    if ((upRight != null) && (upRight.Terrain.Id > tile.Terrain.Id))
+                    {
+                        tile.AddFringe(upRight.Terrain, TileCompass.TopRight);
+                    }
+
+                    if ((downLeft != null) && (downLeft.Terrain.Id > tile.Terrain.Id))
+                    {
+                        tile.AddFringe(downLeft.Terrain, TileCompass.BottomLeft);
+                    }
+
+                    if ((downRight != null) && (downRight.Terrain.Id > tile.Terrain.Id))
+                    {
+                        tile.AddFringe(downRight.Terrain, TileCompass.BottomRight);
+                    }
 
                     if ((up != null) && (up.Terrain.Id > tile.Terrain.Id))
                     {
                         tile.AddFringe(up.Terrain, TileCompass.Top);
+
+                        // Mask out the corners
+                        tile.SetFringe(up.Terrain, tile.GetFringe(up.Terrain) & ~(TileCompass.TopLeft | TileCompass.TopRight));
                     }
 
                     if ((right != null) && (right.Terrain.Id > tile.Terrain.Id))
                     {
                         tile.AddFringe(right.Terrain, TileCompass.Right);
+
+                        // Mask out the corners
+                        tile.SetFringe(right.Terrain, tile.GetFringe(right.Terrain) & ~(TileCompass.BottomRight | TileCompass.TopRight));
                     }
 
                     if ((down != null) && (down.Terrain.Id > tile.Terrain.Id))
                     {
                         tile.AddFringe(down.Terrain, TileCompass.Bottom);
+
+                        // Mask out the corners
+                        tile.SetFringe(down.Terrain, tile.GetFringe(down.Terrain) & ~(TileCompass.BottomLeft | TileCompass.BottomRight));
                     }
 
                     if ((left != null) && (left.Terrain.Id > tile.Terrain.Id))
                     {
                         tile.AddFringe(left.Terrain, TileCompass.Left);
+
+                        // Mask out the corners
+                        tile.SetFringe(left.Terrain, tile.GetFringe(left.Terrain) & ~(TileCompass.TopLeft | TileCompass.BottomLeft));
                     }
 
                     if (tile.IsWall)
                     {
-                        MapTile upLeft = GetTile(col - 1, row + 1);
-                        MapTile upRight = GetTile(col + 1, row + 1);
-                        MapTile downLeft = GetTile(col - 1, row - 1);
-                        MapTile downRight = GetTile(col + 1, row - 1);
-
                         if ((up != null) && (up.IsWall && tile.IsWall) && (up.Terrain.Id == tile.Terrain.Id))
                         {
                             tile.AddWall(tile.Terrain, TileCompass.Top);
@@ -222,7 +253,6 @@ namespace Model.Map
                                 tile.AddWall(tile.Terrain, TileCompass.BottomRight);
                             }
                         }
-
                     }
 
 
@@ -232,71 +262,7 @@ namespace Model.Map
                     //}
                 }
             }
-
-            /*
-            for (int y = 0; y < _height; y++ )
-            {
-                for (int x = 0; x < _width; x++)
-                {
-                    MapTile tile = _tiles[x, y];
-				
-				
-                    foreach (KeyValuePair<Terrain, Fringe> kvp in tile.Fringe)
-                    {
-                        Terrain t = kvp.Key;
-                        Fringe f = kvp.Value;
-					
-                        if ((f.Edge & Edge.Top) == Edge.Top)
-                        {
-                            f.Corner &= ~(Corner.TopLeft | Corner.TopRight);
-                        }
-                        if ((f.Edge & Edge.Right) == Edge.Right)
-                        {
-                            f.Corner &= ~(Corner.TopRight | Corner.BottomRight);
-                        }
-                        if ((f.Edge & Edge.Bottom) == Edge.Bottom)
-                        {
-                            f.Corner &= ~(Corner.BottomLeft | Corner.BottomRight);
-                        }
-                        if ((f.Edge & Edge.Left) == Edge.Left)
-                        {
-                            f.Corner &= ~(Corner.TopLeft | Corner.BottomLeft);
-                        }
-                    }
-				
-                    List<Terrain> s = new List<Terrain>(tile.Fringe.Keys);
-                    s.Sort((a, b) => a.Id.CompareTo(b.Id));
-				
-                    foreach (Terrain t in s)
-                    {
-                        Edge e = tile.Fringe[t].Edge;
-                        if (e != Edge.None)
-                        {
-                            tile.FringeImage.Add(t.Edge[e]);
-                        }
-                        Corner c = tile.Fringe[t].Corner;
-                        if (c != Corner.None)
-                        {
-                            tile.FringeImage.Add(t.Corner[c]);
-                        }
-                    }
-				
-                }
-            }
-            */
-
         }
-
-        /*
-        Fringe GetFringe(MapTile tile, Terrain terrain)
-        {
-            if (tile.Fringe.ContainsKey(terrain) == false)
-            {
-                tile.Fringe[terrain] = new Fringe();
-            }
-            return tile.Fringe[terrain];
-        }
-        */
 
         int NumberOfSetBits(int i)
         {
@@ -304,8 +270,5 @@ namespace Model.Map
             i = (i & 0x33333333) + ((i >> 2) & 0x33333333);
             return (((i + (i >> 4)) & 0x0F0F0F0F) * 0x01010101) >> 24;
         }
-
-
     }
-
 }

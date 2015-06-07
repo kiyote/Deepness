@@ -142,17 +142,17 @@ namespace View.Map
             CalculateBlocksOnDisplay(Camera.main.OrthographicBounds());
         }
 
-        private void MapChanged(Map map, int column, int row, MapTile mapTile)
+        private void MapChanged(Map map, int column, int row, Tile mapTile)
         {
             IndexedBlock ib = GetMapBlock(column, row);
             ib.Behaviour.Populate(map, ib.Column, ib.Row, _ttd);
         }
 
-        private void MapBatchChanged(Map map, List<MapTile> dirtyTiles)
+        private void MapBatchChanged(Map map, List<Tile> dirtyTiles)
         {
             for (int i = 0; i < dirtyTiles.Count; i++)
             {
-                MapTile mapTile = dirtyTiles[i];
+                Tile mapTile = dirtyTiles[i];
                 IndexedBlock block = GetMapBlock(mapTile.Column, mapTile.Row);
                 if (block != null)
                 {
